@@ -27,8 +27,8 @@ body {
 
 /* Header Styling */
 h1, h2, h3, h4, h5, h6 {
-   text-shadow: 0 0 100px rgba(255, 255, 40, 10); 
-   text-shadow: 0 0 200px rgba(255, 255, 30, 5);
+   text-shadow: 0 0 20px rgba(255, 255, 40, 0.7); 
+   text-shadow: 0 0 40px rgba(255, 255, 30, 0.5);
 }
 
 /* Additional styling for the main header */
@@ -54,6 +54,7 @@ footer {
   background-color: #333;
   color: white;
   text-align: center;
+  margin-top: auto;
   padding: 10px;
 }
 
