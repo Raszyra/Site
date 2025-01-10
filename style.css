@@ -5,12 +5,24 @@
   box-sizing: border-box;
 }
 
+html, body{
+  height: 100%;
+  margin: 0;
+}
+
 /* Body Styling */
 body {
   font-family: Arial, sans-serif;
   background-color: #f4f4f4;
   color: #333;
   padding: 20px;
+
+  display: flex;
+  flex-direction: column;
+}
+
+.main-content {
+  flex: 1;
 }
 
 /* Header Styling */
@@ -36,6 +48,13 @@ a {
   color: #007BFF;
   text-decoration: none;
   
+}
+
+footer {
+  background-color: #333;
+  color: white;
+  text-align: center;
+  padding: 10px;
 }
 
 a:hover {
