@@ -26,7 +26,8 @@ body {
 
 /* Header Styling */
 h1, h2, h3, h4, h5, h6 {
-   text-shadow: 0 0 10px rgba(255, 255, 255, 0.7), 0 0 20px rgba(255, 255, 255, 0.5);
+   text-shadow: 0 0 10px rgba(255, 255, 40, 0.7); 
+   text-shadow: 0 0 20px rgba(255, 255, 30, 0.5);
 }
 
 /* Additional styling for the main header */
