@@ -11,12 +11,13 @@ html, body{
 
 /* Body Styling */
 body {
+    display: flex;
+  min-height: 100vh;
   font-family: Arial, sans-serif;
   background-color: #f4f4f4;
   color: #333;
   padding: 20px;
   height: 100%;
-  display: flex;
   flex-direction: column;
 }
 
@@ -26,8 +27,8 @@ body {
 
 /* Header Styling */
 h1, h2, h3, h4, h5, h6 {
-   text-shadow: 0 0 10px rgba(255, 255, 40, 0.7); 
-   text-shadow: 0 0 20px rgba(255, 255, 30, 0.5);
+   text-shadow: 0 0 100px rgba(255, 255, 40, 10); 
+   text-shadow: 0 0 200px rgba(255, 255, 30, 5);
 }
 
 /* Additional styling for the main header */
