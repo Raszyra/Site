@@ -19,6 +19,15 @@ body {
   padding: 20px;
   height: 100%;
   flex-direction: column;
+  max-width: 800px;
+}
+
+/* Paragraphs */
+.main-content p {
+  font-size: 1.1em;    /* Slightly larger font size */
+  line-height: 1.6;    /* Adds space between lines */
+  text-align: justify; /* Makes the text align neatly */
+  margin-bottom: 1em;  /* Spacing between paragraphs */
 }
 
 .main-content {
