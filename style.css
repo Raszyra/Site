@@ -70,6 +70,16 @@ nav ul li a {
 nav ul li a:hover {
   background-color: #555; /* Lighter background on hover */
 
+.dev-list {
+    list-style-type: square; /* Changes bullet style */
+    padding-left: 20px; /* Indents the list */
+    font-family: Arial, sans-serif; /* Adjusts font */
+}
+
+.dev-list li {
+    margin-bottom: 8px; /* Adds space between list items */
+}
+  
 /* Paragraph Styling */
 p {
   font-size: 1.1em;
