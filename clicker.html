@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Faction Clicker</title>
+    <style>
+        body { text-align: center; font-family: Arial, sans-serif; background-color: #222; color: #fff; }
+        #click-button { font-size: 24px; padding: 15px 30px; margin-top: 20px; }
+        #counter { font-size: 32px; margin-top: 10px; }
+        #message { margin-top: 20px; font-size: 18px; }
+    </style>
+</head>
+<body>
+
+    <h1>Faction Clicker</h1>
+    <button id="click-button">Click Me!</button>
+    <p id="counter">Clicks: 0</p>
+    <p id="message"></p>
+
+    <script>
+        let clicks = 0;
+        let messages = [
+            "You have begun your rise to power.",
+            "Your influence is growing...",
+            "The world whispers your name...",
+            "Legends will be told about you.",
+            "Your Faction is unstoppable!"
+        ];
+        
+        document.getElementById("click-button").addEventListener("click", function() {
+            clicks++;
+            document.getElementById("counter").innerText = "Clicks: " + clicks;
+
+            if (clicks % 10 === 0 && clicks / 10 - 1 < messages.length) {
+                document.getElementById("message").innerText = messages[Math.floor(clicks / 10) - 1];
+            }
+        });
+    </script>
+
+</body>
+</html>
