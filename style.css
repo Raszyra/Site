@@ -89,8 +89,13 @@ p {
 
 /* Links Styling */
 a {
-  color: #007BFF;
+  color: rgba(255, 255, 255, 1);
   text-decoration: none; 
+}
+a:hover {
+  text-decoration: underline;
+  color: rgba(100, 20, 255, 1);
+  text-shadow: 0 0 20px rgba(100, 0, 255, 1.0), 0 0 30px rgba(100, 20, 255, 0.7);
 }
 
 footer {
@@ -98,11 +103,4 @@ footer {
   color: white;
   text-align: center;
   margin-top: auto;
-}
-
-a:hover {
-  text-decoration: underline;
-  color: rgba(255, 255, 255, 1);
-   text-shadow: 0 0 20px rgba(100, 0, 255, 1.0); 
-   text-shadow: 0 0 30px rgba(100, 20, 255, 0.7);
 }
