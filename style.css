@@ -88,11 +88,11 @@ p {
 }
 
 /* Links Styling */
-a {
+.main-content a {
   color: rgba(255, 255, 255, 1);
   text-decoration: none; 
 }
-a:hover {
+.main-content a:hover {
   text-decoration: underline;
   color: rgba(100, 20, 255, 1);
   text-shadow: 0 0 20px rgba(100, 0, 255, 1.0), 0 0 30px rgba(100, 20, 255, 0.7);
