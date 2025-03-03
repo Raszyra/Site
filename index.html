@@ -16,7 +16,7 @@
             let allLinks = document.querySelectorAll("a");
 
             // Filter only valid links (exclude ones without an href)
-            let validLinks = Array.from(allLinks).filter(link => {return link.href && !link.closest('nav')};
+            let validLinks = Array.from(allLinks).filter(link => {return link.href && !link.closest('nav');});
 
             if (validLinks.length > 0) {
                 // Select a random link
