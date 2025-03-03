@@ -9,29 +9,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title> F7 - Downloads </title>
     <link rel="stylesheet" href="style.css">
-
-<script>
-        document.addEventListener("DOMContentLoaded", function () {
-            // Get all links from the site
-            let allLinks = document.querySelectorAll("a");
-
-            // Filter only valid links (exclude ones without an href)
-            let validLinks = Array.from(allLinks).filter(link => link.href);
-
-            if (validLinks.length > 0) {
-                // Select a random link
-                let randomLink = validLinks[Math.floor(Math.random() * validLinks.length)];
-
-                // Display it on the front page
-                let displayArea = document.getElementById("featured-link");
-                displayArea.innerHTML = `<a href="${randomLink.href}" target="_blank">${randomLink.textContent || randomLink.href}</a>`;
-            } else {
-                console.warn("No valid links found on the site.");
-            }
-        });
-</script>
-    
 </head>
+    
 <body>
     <div class="main-content">
 
