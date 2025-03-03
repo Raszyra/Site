@@ -12,18 +12,26 @@
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-        let targetPage = "downloads.html"; // The page to pull links from
+        let targetPage = "other-page.html"; // Change to your target page
         let displayArea = document.getElementById("featured-link");
 
-        // Check if a link is already saved
+        if (!displayArea) {
+            console.error("No element with ID 'featured-link' found.");
+            return;
+        }
+
         let savedLink = localStorage.getItem("featuredLink");
         let savedText = localStorage.getItem("featuredText");
+        let lastUpdated = localStorage.getItem("featuredLinkTimestamp");
 
-        if (savedLink) {
-            // Use the stored link on any page
+        let now = new Date().getTime();
+        let oneDay = 24 * 60 * 60 * 1000; // Time interval to refresh (1 day)
+
+        if (savedLink && lastUpdated && now - lastUpdated < oneDay) {
+            // Use the stored link if it's fresh
             displayArea.innerHTML = `<a href="${savedLink}" target="_blank">${savedText}</a>`;
         } else {
-            // Fetch new links if none are stored
+            // Fetch new links if outdated or missing
             fetch(targetPage)
                 .then(response => response.text())
                 .then(html => {
@@ -36,19 +44,24 @@
                     if (validLinks.length > 0) {
                         let randomLink = validLinks[Math.floor(Math.random() * validLinks.length)];
                         let linkURL = randomLink.href;
-                        let linkText = randomLink.textContent || randomLink.href;
+                        let linkText = randomLink.textContent.trim() || linkURL;
 
-                        // Store it in localStorage
+                        // Store the new link and timestamp
                         localStorage.setItem("featuredLink", linkURL);
                         localStorage.setItem("featuredText", linkText);
+                        localStorage.setItem("featuredLinkTimestamp", now);
 
-                        // Display it
+                        // Display it immediately
                         displayArea.innerHTML = `<a href="${linkURL}" target="_blank">${linkText}</a>`;
                     } else {
                         console.warn("No valid links found.");
+                        displayArea.textContent = "No links available.";
                     }
                 })
-                .catch(error => console.error("Error fetching links:", error));
+                .catch(error => {
+                    console.error("Error fetching links:", error);
+                    displayArea.textContent = "Error loading link.";
+                });
         }
     });
 </script>
