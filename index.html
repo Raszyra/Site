@@ -27,7 +27,7 @@
               tempDiv.innerHTML = html;
 
                     let allLinks = tempDiv.querySelectorAll("a");
-                    let validLinks = Array.from(allLinks).filter(link => {return link.href && !link.closest('nav')};);
+                    let validLinks = Array.from(allLinks).filter(link => {return link.href && !link.closest('nav');});
 
                     if (validLinks.length > 0) {
                         let randomLink = validLinks[Math.floor(Math.random() * validLinks.length)];
