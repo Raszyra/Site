@@ -9,6 +9,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title> F7 - Downloads </title>
     <link rel="stylesheet" href="style.css">
+
+<script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Get all links from the site
+            let allLinks = document.querySelectorAll("a");
+
+            // Filter only valid links (exclude ones without an href)
+            let validLinks = Array.from(allLinks).filter(link => link.href);
+
+            if (validLinks.length > 0) {
+                // Select a random link
+                let randomLink = validLinks[Math.floor(Math.random() * validLinks.length)];
+
+                // Display it on the front page
+                let displayArea = document.getElementById("featured-link");
+                displayArea.innerHTML = `<a href="${randomLink.href}" target="_blank">${randomLink.textContent || randomLink.href}</a>`;
+            } else {
+                console.warn("No valid links found on the site.");
+            }
+        });
+</script>
+    
 </head>
 <body>
     <div class="main-content">
@@ -27,17 +49,27 @@
     </header>
 
     <br/> <br/>
+        
     <section>
        <header> <h2> Downloads: </h2> </header>
         <br/>
-        <br/> <h4> Games: </h4> <br/>
+        <p> Not sure? New to the site? Check out this random selection -> 
+        <span id="featured-link">Loading...</span> </p>
+
+        <br/><br/>
+        
+        <h4> Games: </h4> <br/>
         <p> <b>The Silver Flask</b><br/> A classic sword & spell adventure that embraces a revolutionary style - the images are all processed <i>in your brain</i>... </p>
         <a href="https://github.com/Raszyra/The-Silver-Flask/releases/tag/v0.5.6-alpha" target="_blank"> -  The Silver Flask (Latest Release)  -</a> <br/>
+        
         <br/> <br/>
+        
         <br/> <h4> Tools: </h4> <br/>
         <p> <b>C++PandorA</b><br/> A language library that allows programmers to write code in French, Spanish, German, Russian, Hindi, or Japanese.</p>
        <a href="https://github.com/Raszyra/C-PandorA/releases/tag/v1.0" target="_blank"> -  C++PandorA  -</a> <br/>
+        
         <br/> <br/>
+       
         <br/> <h4> Writing: </h4> <br/>
         <p>
             <a href="https://docs.google.com/document/d/1cIyP4LXetVNvCksdfTslc5BV7l4sOv2K6rs_m-FG7wg/edit?usp=drivesdk target="_blank"> <b> Thanks for a good day</b></a> 
