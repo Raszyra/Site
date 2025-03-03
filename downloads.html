@@ -9,6 +9,39 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title> F7 - Downloads </title>
     <link rel="stylesheet" href="style.css">
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        let displayArea = document.getElementById("featured-link");
+
+        if (!displayArea) {
+            console.error("No element with ID 'featured-link' found.");
+            return;
+        }
+    
+        let allLinks = document.querySelectorAll("a");
+        let validLinks = Array.from(allLinks).filter(link => {return link.href && !link.closest('nav');});
+
+        if (validLinks.length > 0) {
+            let randomLink = validLinks[Math.floor(Math.random() * validLinks.length)];
+            let linkURL = randomLink.href;
+            let linkText = randomLink.textContent.trim() || linkURL;
+
+          // Display it immediately
+          displayArea.innerHTML = `<a href="${linkURL}" target="_blank">${linkText}</a>`;
+         } else {
+            console.warn("No valid links found.");
+            displayArea.textContent = "No links available.";
+        }
+          .catch(error => {
+          console.error("Error fetching links:", error);
+          displayArea.textContent = "Error loading link.";
+        });
+}
+</script>
+    
+
+
 </head>
     
 <body>
