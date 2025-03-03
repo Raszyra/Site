@@ -9,6 +9,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title> F7E </title>
     <link rel="stylesheet" href="style.css">
+
+<script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Get all links from the site
+            let allLinks = document.querySelectorAll("a");
+
+            // Filter only valid links (exclude ones without an href)
+            let validLinks = Array.from(allLinks).filter(link => link.href);
+
+            if (validLinks.length > 0) {
+                // Select a random link
+                let randomLink = validLinks[Math.floor(Math.random() * validLinks.length)];
+
+                // Display it on the front page
+                let displayArea = document.getElementById("featured-link");
+                displayArea.innerHTML = `<a href="${randomLink.href}" target="_blank">${randomLink.textContent || randomLink.href}</a>`;
+            } else {
+                console.warn("No valid links found on the site.");
+            }
+        });
+</script>
+
 </head>
 <body>
     <div class="main-content">
@@ -27,10 +49,13 @@
     </header>
 
     <section>
-        <header> <h2> Around the site: </h2></header>
-        <a href="clicker.html" target="_blank"> Faction Clicker</a>
+        <header> <h2>From Around the site: </h2></header>
+        <p> New to the site? check out this random selection -> 
+        <span id="featured-link">Loading...</span> </p>
     </section>
+        
     <br/> <br/>
+        
     <section>
        <header> <h2> Featured: </h2> </header>
         <br/> <h4> The Silver Flask v0.5.6 is finally here! </h4> <br/>
@@ -46,6 +71,7 @@
     </section>
 
     <br/> <br/>
+        <a href="clicker.html" target="_blank"> Faction Clicker</a>
     <br/> <br/>
         
     </div>
