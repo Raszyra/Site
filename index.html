@@ -11,24 +11,46 @@
     <link rel="stylesheet" href="style.css">
 
 <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            // Get all links from the site
-            let allLinks = document.querySelectorAll("a");
+    document.addEventListener("DOMContentLoaded", function () {
+        let targetPage = "downloads.html"; // The page to pull links from
+        let displayArea = document.getElementById("featured-link");
 
-            // Filter only valid links (exclude ones without an href)
-            let validLinks = Array.from(allLinks).filter(link => link.href);
+        // Check if a link is already saved
+        let savedLink = localStorage.getItem("featuredLink");
+        let savedText = localStorage.getItem("featuredText");
 
-            if (validLinks.length > 0) {
-                // Select a random link
-                let randomLink = validLinks[Math.floor(Math.random() * validLinks.length)];
+        if (savedLink) {
+            // Use the stored link on any page
+            displayArea.innerHTML = `<a href="${savedLink}" target="_blank">${savedText}</a>`;
+        } else {
+            // Fetch new links if none are stored
+            fetch(targetPage)
+                .then(response => response.text())
+                .then(html => {
+                    let tempDiv = document.createElement("div");
+                    tempDiv.innerHTML = html;
 
-                // Display it on the front page
-                let displayArea = document.getElementById("featured-link");
-                displayArea.innerHTML = `<a href="${randomLink.href}" target="_blank">${randomLink.textContent || randomLink.href}</a>`;
-            } else {
-                console.warn("No valid links found on the site.");
-            }
-        });
+                    let allLinks = tempDiv.querySelectorAll("a");
+                    let validLinks = Array.from(allLinks).filter(link => link.href);
+
+                    if (validLinks.length > 0) {
+                        let randomLink = validLinks[Math.floor(Math.random() * validLinks.length)];
+                        let linkURL = randomLink.href;
+                        let linkText = randomLink.textContent || randomLink.href;
+
+                        // Store it in localStorage
+                        localStorage.setItem("featuredLink", linkURL);
+                        localStorage.setItem("featuredText", linkText);
+
+                        // Display it
+                        displayArea.innerHTML = `<a href="${linkURL}" target="_blank">${linkText}</a>`;
+                    } else {
+                        console.warn("No valid links found.");
+                    }
+                })
+                .catch(error => console.error("Error fetching links:", error));
+        }
+    });
 </script>
 
 </head>
