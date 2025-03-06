@@ -30,34 +30,6 @@
             }
         });
     </script>
-
-<script>
-    
-const links = [
-    { url: "example.com/song.mp3", type: "audio", color: "#1E90FF" },  // Blue for audio
-    { url: "example.com/video.mp4", type: "video", color: "#FF4500" }, // Orange for video
-    { url: "example.com/book.pdf", type: "document", color: "#32CD32" } // Green for documents
-];
-
-// Function to render links
-function renderLinks() {
-    const container = document.getElementById("linkContainer");
-    links.forEach(link => {
-        let a = document.createElement("a");
-        a.href = link.url;
-        a.textContent = `${link.type.toUpperCase()} Download`;
-        a.style.color = link.color;
-        a.setAttribute("target", "_blank"); // Open in a new tab
-        container.appendChild(a);
-        container.appendChild(document.createElement("br"));
-    });
-}
-
-// Run the function after page load
-    
-window.onload = renderLinks;
-    
-</script>
     
 </head>
 
@@ -100,28 +72,28 @@ window.onload = renderLinks;
         
         <h2> Games: </h2> <br/>
         <p> <b>The Silver Flask</b><br/> A classic sword & spell adventure that embraces a revolutionary style - the images are all processed <i>in your brain</i>... </p>
-        <a href="https://github.com/Raszyra/The-Silver-Flask/releases/tag/v0.5.6-alpha" target="_blank"> - Download The Silver Flask (Latest Release)  -</a> <br/>
+        <a href="https://github.com/Raszyra/The-Silver-Flask/releases/tag/v0.5.6-alpha" class="game-link" target="_blank"> - Download The Silver Flask (Latest Release)  -</a> <br/>
 
         <br/>
         
         <p> <b>Burger Builder</b><br/>Stack 'em to the heavens! Made with Processing. </p>
-        <a href="https://drive.google.com/file/d/1H2e11J73MUuEJVJ8S40MtFdyRF9UWAg7/view?usp=drive_link" target="_blank"> - Download Burger Builder  -</a> <br/>
+        <a href="https://drive.google.com/file/d/1H2e11J73MUuEJVJ8S40MtFdyRF9UWAg7/view?usp=drive_link" class="game-link" target="_blank"> - Download Burger Builder  -</a> <br/>
 
          <br/>
         
         <p> <b>Super Action Man 3</b><br/> A console RPG prototype that was abandoned in its early stages </p>
-        <a href="https://drive.google.com/file/d/1JF68EiIIoDM0wd8y4AvispvGNMv1M8qI/view?usp=drive_link" target="_blank"> - Download SAM3.exe  -</a> <br/>
+        <a href="https://drive.google.com/file/d/1JF68EiIIoDM0wd8y4AvispvGNMv1M8qI/view?usp=drive_link" class="game-link" target="_blank"> - Download SAM3.exe  -</a> <br/>
     
         <br/> <br/>
        
         <br/> <h2> Writing: </h2> <br/>
         <p>
-            <a href="https://docs.google.com/document/d/1cIyP4LXetVNvCksdfTslc5BV7l4sOv2K6rs_m-FG7wg/edit?usp=drivesdk" target="_blank"> <b> Thanks for a good day</b></a> 
+            <a href="https://docs.google.com/document/d/1cIyP4LXetVNvCksdfTslc5BV7l4sOv2K6rs_m-FG7wg/edit?usp=drivesdk" class="poem-link" target="_blank"> <b> Thanks for a good day</b></a> 
             A poem about smiling.
         </p>
         <br/> 
         <p>
-            <a href="https://docs.google.com/document/d/11Dc96lSMuXsWLEYFHIYOl1LEmtTlEVahjgimF8p1i3M/edit?usp=drivesdk" target="_blank"> <b> Soulspring</b></a> 
+            <a href="https://docs.google.com/document/d/11Dc96lSMuXsWLEYFHIYOl1LEmtTlEVahjgimF8p1i3M/edit?usp=drivesdk" class="poem-link" target="_blank"> <b> Soulspring</b></a> 
             A poem about loss.
         </p>
         <br/>
@@ -136,22 +108,22 @@ window.onload = renderLinks;
         </p>
         <br/>
         <p>
-            <a href="https://docs.google.com/document/d/1jp7eclIMeY472GENTijdVBaX133rKiYFOSGVruTUz2U/edit?usp=drivesdk" target="_blank"> <b> I Promised </b></a> 
+            <a href="https://docs.google.com/document/d/1jp7eclIMeY472GENTijdVBaX133rKiYFOSGVruTUz2U/edit?usp=drivesdk" class="poem-link" target="_blank"> <b> I Promised </b></a> 
             Maybe I'll get it right this time, but it could never be enough.
         </p>
         <br/>
         <p>
-            <a href="https://docs.google.com/document/d/18Djf-sUMZks6SbrN2ygfsEEfpndlzYMUM6PtwTXrXWY/edit?usp=drivesdk" target="_blank"> <b>  Diary Entry #266 </b></a> 
+            <a href="https://docs.google.com/document/d/18Djf-sUMZks6SbrN2ygfsEEfpndlzYMUM6PtwTXrXWY/edit?usp=drivesdk" class="story-link" target="_blank"> <b>  Diary Entry #266 </b></a> 
             Whose f****** diary <i>is</i> this?! (explicit)
         </p>
         <br/>
         <p>
-            <a href="https://docs.google.com/document/d/1QZjIc0WP8KbQ77Yi2mjXVQ-XadIeYNJgMkIoNN1bjJ8/edit?usp=drivesdk" target="_blank"> <b> Caravan </b></a> 
+            <a href="https://docs.google.com/document/d/1QZjIc0WP8KbQ77Yi2mjXVQ-XadIeYNJgMkIoNN1bjJ8/edit?usp=drivesdk" class="story-link" target="_blank"> <b> Caravan </b></a> 
             The sands are harsh and unforgiving. 
         </p>
         <br/>
         <p>
-            <a href="https://docs.google.com/document/d/1rW_O2eLXWpszi-DUnXmUoTxufE2bM0LULsmwCLKhqVk/edit?usp=drivesdk" target="_blank"> <b> The Forbidden Grimoire </b></a> 
+            <a href="https://docs.google.com/document/d/1rW_O2eLXWpszi-DUnXmUoTxufE2bM0LULsmwCLKhqVk/edit?usp=drivesdk" class="story-link" target="_blank"> <b> The Forbidden Grimoire </b></a> 
             These were the only pages left - do you dare approach the threshold of arcane knowedge?
         </p>
         <br/>
