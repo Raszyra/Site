@@ -104,3 +104,26 @@ footer {
   text-align: center;
   margin-top: auto;
 }
+
+
+//Link Classes
+.game-link {
+    color: red; /* Red for game links */
+}
+.story-link {
+    color: aqua; /* Blue for story links */
+}
+.poem-link {
+    color: mediumorchid; /* Green for poem links */
+}
+
+/* Optional: Add hover effects for better UX */
+.game-link:hover {
+    color: darkred;
+}
+.story-link:hover {
+    color: darkblue;
+}
+.poem-link:hover {
+    color: darkgreen;
+}
