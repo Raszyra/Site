@@ -7,7 +7,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> F7 - Downloads </title>
+    <title> F7E - Downloads </title>
     <link rel="stylesheet" href="style.css">
 
 <script>
@@ -30,6 +30,34 @@
             }
         });
     </script>
+
+<script>
+    
+const links = [
+    { url: "example.com/song.mp3", type: "audio", color: "#1E90FF" },  // Blue for audio
+    { url: "example.com/video.mp4", type: "video", color: "#FF4500" }, // Orange for video
+    { url: "example.com/book.pdf", type: "document", color: "#32CD32" } // Green for documents
+];
+
+// Function to render links
+function renderLinks() {
+    const container = document.getElementById("linkContainer");
+    links.forEach(link => {
+        let a = document.createElement("a");
+        a.href = link.url;
+        a.textContent = `${link.type.toUpperCase()} Download`;
+        a.style.color = link.color;
+        a.setAttribute("target", "_blank"); // Open in a new tab
+        container.appendChild(a);
+        container.appendChild(document.createElement("br"));
+    });
+}
+
+// Run the function after page load
+    
+window.onload = renderLinks;
+    
+</script>
     
 </head>
 
@@ -63,14 +91,14 @@
     <br/> <br/>
         
     <section>
-       <header> <h2> Downloads: </h2> </header>
+       <header> <h2> Media </h2> </header>
         <br/>
         <p> Not sure? New to the site? Check out this random selection -> 
         <span id="featured-link">Loading...</span> </p>
 
         <br/><br/>
         
-        <h3> Games: </h3> <br/>
+        <h2> Games: </h2> <br/>
         <p> <b>The Silver Flask</b><br/> A classic sword & spell adventure that embraces a revolutionary style - the images are all processed <i>in your brain</i>... </p>
         <a href="https://github.com/Raszyra/The-Silver-Flask/releases/tag/v0.5.6-alpha" target="_blank"> - Download The Silver Flask (Latest Release)  -</a> <br/>
 
@@ -85,14 +113,8 @@
         <a href="https://drive.google.com/file/d/1JF68EiIIoDM0wd8y4AvispvGNMv1M8qI/view?usp=drive_link" target="_blank"> - Download SAM3.exe  -</a> <br/>
     
         <br/> <br/>
-        
-        <br/> <h3> Tools: </h3> <br/>
-        <p> <b>C++PandorA</b><br/> A language library that allows programmers to write code in French, Spanish, German, Russian, Hindi, or Japanese.</p>
-       <a href="https://github.com/Raszyra/C-PandorA/releases/tag/v1.0" target="_blank"> -  C++PandorA  -</a> <br/>
-        
-        <br/> <br/>
        
-        <br/> <h3> Writing: </h3> <br/>
+        <br/> <h2> Writing: </h2> <br/>
         <p>
             <a href="https://docs.google.com/document/d/1cIyP4LXetVNvCksdfTslc5BV7l4sOv2K6rs_m-FG7wg/edit?usp=drivesdk" target="_blank"> <b> Thanks for a good day</b></a> 
             A poem about smiling.
