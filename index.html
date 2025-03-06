@@ -10,44 +10,7 @@
     <title> F7E </title>
     <link rel="stylesheet" href="style.css">
 
-<script>
-        document.addEventListener("DOMContentLoaded", function () {
-            // Get all links from the site
-        let targetPage = "downloads.html"; // Change to your target page
-        let displayArea = document.getElementById("featured-link");
-
-        if (!displayArea) {
-            console.error("No element with ID 'featured-link' found.");
-            return;
-        }
-
-        // Fetch the target page
-        fetch(targetPage)
-            .then(response => {
-                console.log("Fetch response: ", response);  // Debugging the fetch response
-                return response.text();
-            })
-            .then(html => {
-                console.log("Fetched HTML: ", html);  // Debugging the fetched HTML content
-
-                let tempDiv = document.createElement("div");
-                tempDiv.innerHTML = html;
-                
-            let allLinks = tempDiv.querySelectorAll('a');
-            let validLinks = Array.from(allLinks).filter(link => {return link.href && !link.closest('nav');});
-
-            if (validLinks.length > 0) {
-                // Select a random link
-                let randomLink = validLinks[Math.floor(Math.random() * validLinks.length)];
-
-                // Display it on the front page
-                let displayArea = document.getElementById("featured-link");
-                displayArea.innerHTML = `<a href="${randomLink.href}" target="_blank">${randomLink.textContent || randomLink.href}</a>`;
-            } else {
-                console.warn("No valid links found on the site.");
-            });
-        });
-</script>
+<span id="visitor-count">Loading...</span>
 
 </head>
     
@@ -59,6 +22,15 @@
   gtag('js', new Date());
 
   gtag('config', 'G-MG3042XFS3');
+</script>
+
+<span id="visitor-count">Loading...</span>
+
+<script>
+fetch('counter.php')
+  .then(response => response.text())
+  .then(data => document.getElementById('visitor-count').innerHTML = data)
+  .catch(error => console.error('Error loading counter:', error));
 </script>
     
 <body>
