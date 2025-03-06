@@ -107,8 +107,8 @@ footer {
 
 
 //Link Classes
-.game-link {
-    color: red; /* Red for game links */
+.game-link : link, .game-link : visited{
+    color: red ! important; /* Red for game links */
 }
 .story-link {
     color: aqua; /* Blue for story links */
