@@ -65,14 +65,14 @@ h1 {
   margin-bottom: 20px;
 }
 
-.slogan_header h2 {
+.title-slogan {
   font-family: 'Satisfy', cursive;
   color: rgb(71, 0, 200); 
   text-shadow: 0 0 20px rgba(100, 0, 255, 1.0); 
    text-shadow: 0 0 30px rgba(100, 20, 255, 0.7);
 }
 
-.logo_header h1 {
+.title-logo {
   font-family: 'Shadows Into Light', cursive;
   text-shadow: 0 0 20px rgba(100, 0, 255, 1.0); 
    text-shadow: 0 0 30px rgba(100, 20, 255, 0.7);
