@@ -35,26 +35,18 @@ body {
 }
 
 /* Links Styling */
-a, a:link, a:visited {
-  color: red;
+a {
+  color: orchid;
   text-decoration: none;
-  background-color: white;
+  background-color: black;
 }
-
-footer {
-  background-color: #333;
-  color: white;
-  text-align: center;
-  margin-top: auto;
-}
-
 
 //Link Classes
 .game-link:link, .game-link:visited{
-    color: red ! important; /* Red for game links */
+    color: lime; /* Red for game links */
 }
 .story-link {
-    color: aqua; /* Blue for story links */
+    color: aquamarine; /* Blue for story links */
 }
 .poem-link {
     color: mediumorchid; /* Green for poem links */
@@ -62,13 +54,13 @@ footer {
 
 /* Optional: Add hover effects for better UX */
 .game-link:hover {
-    color: darkred;
+    color: gold;
 }
 .story-link:hover {
-    color: darkblue;
+    color: aqua;
 }
 .poem-link:hover {
-    color: darkgreen;
+    color: lightorchid;
 }
 
 /* Header Styling */
@@ -82,6 +74,13 @@ h1, h2, h3, h4, h5, h6 {
 h1 {
   font-size: 2.5em;
   margin-bottom: 20px;
+}
+
+footer {
+  background-color: #333;
+  color: white;
+  text-align: center;
+  margin-top: auto;
 }
 
 /* Navigation Bar */
