@@ -88,20 +88,11 @@ p {
 }
 
 /* Links Styling */
-.main-content a {
-  color: rgba(255, 255, 255, 1);
-  text-decoration: none; 
+a, a:link, a:visited {
+  color: red;
+  text-decoration: none;
+  background-color: white;
 }
-.main-content a:hover {
-  text-decoration: underline;
-  color: rgba(100, 20, 255, 1);
-  text-shadow: 0 0 20px rgba(100, 0, 255, 1.0), 0 0 30px rgba(100, 20, 255, 0.7);
-}
-
-a:link {color:red;}      /* unvisited link */
-a:visited {color:#FFFAFA;}  /* visited link */
-a:hover {color:#FFFAFA;}  /* mouse over link */
-a:active {color:#FFFAFA;}
 
 footer {
   background-color: #333;
