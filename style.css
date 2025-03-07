@@ -98,6 +98,11 @@ p {
   text-shadow: 0 0 20px rgba(100, 0, 255, 1.0), 0 0 30px rgba(100, 20, 255, 0.7);
 }
 
+a:link {color:coral;}      /* unvisited link */
+a:visited {color:#FFFAFA;}  /* visited link */
+a:hover {color:#FFFAFA;}  /* mouse over link */
+a:active {color:#FFFAFA;}
+
 footer {
   background-color: #333;
   color: white;
