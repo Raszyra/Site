@@ -42,15 +42,9 @@ a {
 }
 
 //Link Classes
-.game-link:link, .game-link:visited{
-    color: lime; /* Red for game links */
-}
-.story-link {
-    color: aquamarine; /* Blue for story links */
-}
-.poem-link {
-    color: mediumorchid; /* Green for poem links */
-}
+.game-link {color: lime;}
+.story-link {color: aquamarine;}
+.poem-link {color: mediumorchid;}
 
 /* Optional: Add hover effects for better UX */
 .game-link:hover {
