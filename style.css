@@ -34,6 +34,43 @@ body {
   flex-grow: 1;
 }
 
+/* Links Styling */
+a, a:link, a:visited {
+  color: red;
+  text-decoration: none;
+  background-color: white;
+}
+
+footer {
+  background-color: #333;
+  color: white;
+  text-align: center;
+  margin-top: auto;
+}
+
+
+//Link Classes
+.game-link:link, .game-link:visited{
+    color: red ! important; /* Red for game links */
+}
+.story-link {
+    color: aqua; /* Blue for story links */
+}
+.poem-link {
+    color: mediumorchid; /* Green for poem links */
+}
+
+/* Optional: Add hover effects for better UX */
+.game-link:hover {
+    color: darkred;
+}
+.story-link:hover {
+    color: darkblue;
+}
+.poem-link:hover {
+    color: darkgreen;
+}
+
 /* Header Styling */
 h1, h2, h3, h4, h5, h6 {
    color: rgba(255, 255, 255, 1);
@@ -87,39 +124,4 @@ p {
   margin-bottom: 15px;
 }
 
-/* Links Styling */
-a, a:link, a:visited {
-  color: red;
-  text-decoration: none;
-  background-color: white;
-}
 
-footer {
-  background-color: #333;
-  color: white;
-  text-align: center;
-  margin-top: auto;
-}
-
-
-//Link Classes
-.game-link:link, .game-link:visited{
-    color: red ! important; /* Red for game links */
-}
-.story-link {
-    color: aqua; /* Blue for story links */
-}
-.poem-link {
-    color: mediumorchid; /* Green for poem links */
-}
-
-/* Optional: Add hover effects for better UX */
-.game-link:hover {
-    color: darkred;
-}
-.story-link:hover {
-    color: darkblue;
-}
-.poem-link:hover {
-    color: darkgreen;
-}
