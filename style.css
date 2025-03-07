@@ -36,15 +36,10 @@ body {
 
 /* Links Styling */
 a {
-  color: orchid;
+  color: chartreuse;
   text-decoration: none;
   background-color: black;
 }
-
-//Link Classes
-.game-link {color: chartreuse;}
-.story-link {color: aquamarine;}
-.poem-link {color: mediumorchid;}
 
 /* Optional: Add hover effects for better UX */
 .game-link:hover {
