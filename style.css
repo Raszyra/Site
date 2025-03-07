@@ -67,10 +67,16 @@ h1 {
 
 .slogan_header h2 {
   font-family: 'Satisfy', cursive;
+  color: rgb(71, 0, 200); 
+  font-family: 'Satisfy', sans-serif;
+  text-shadow: 0 0 20px rgba(100, 0, 255, 1.0); 
+   text-shadow: 0 0 30px rgba(100, 20, 255, 0.7);
 }
 
 .logo_header h1 {
   font-family: 'Shadows Into Light', cursive;
+  text-shadow: 0 0 20px rgba(100, 0, 255, 1.0); 
+   text-shadow: 0 0 30px rgba(100, 20, 255, 0.7);
 }
 
 footer {
