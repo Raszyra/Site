@@ -1,1 +1,102 @@
+<!DOCTYPE html>
+<!-- index.html -->
+<!-- The official main page of Faction Seven Enterprises (courtesy of GitHub) -->
 
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> F7E </title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Satisfy&display=swap" rel="stylesheet">
+
+<span id="visitor-count">Loading...</span>
+
+</head>
+    
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-MG3042XFS3"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-MG3042XFS3');
+</script>
+
+<script>
+fetch('counter.php')
+  .then(response => response.text())
+  .then(data => document.getElementById('visitor-count').innerHTML = data)
+  .catch(error => console.error('Error loading counter:', error));
+</script>
+    
+<body>
+    <div class="main-content">
+
+    <nav>
+      <ul>
+        <li><a href="about.html">About</a></li>
+        <li><a href="tools.html">Tools</a></li>
+        <li><a href="downloads.html">Media</a></li>
+        <li><a href="index.html" target="_blank">Home</a></li>
+      </ul>
+    </nav>
+        
+    <header> 
+        <h1> Faction Seven Entertainment </h1>
+        <p> Focus, Dedication, and Third Party Software™ </p>
+        <img src="logo2_banner.jpg" alt="Logo" width="300px">
+    </header>
+        
+    <br/> 
+      <h2> External Links </h2>
+      Here's a collection of all the best software from around the web. If  there's anything missing from this list, send me the link - I love trying out new tools.
+    <br/>
+     
+    <br/><br/>  
+
+    <section>
+        <br/> <h4> Code::Blocks </h4> 
+        A full-featured, free and open-source C++ IDE. Comes with MinGW GCC for compiling C++ code. <br/>
+        This is where I started - it's pretty easy to use and well supported. <br/>
+       <a href="https://www.Codeblocks.org" target="_blank"> - Visit the Code::Blocks website -</a> <br/>
+
+      <br/> <h4> Pivot Animator </h4> 
+        A joint-rotation-based animation software with plenty of base functionality, and a massive user-made asset library.<br/>
+        Pivot makes positioning and animating simple characters the work of minutes (perfect for if you need to animate a short sequence). <br/>
+       <a href="https://www.pivot.org" target="_blank"> - Visit the Pivot website -</a> <br/>
+
+      <br/> <h4> OBS Studio </h4> 
+        The easiest and free-est screen capture software I could find. Absolutely simple to use and does exactly what it says on the box. <br/>
+       <a href="https://www.obsproject.com" target="_blank"> - Visit the OBS Project website -</a> <br/>
+
+      <br/> <h4> ChatGPT </h4> 
+        No <i>way</i> you don't know what this is...and if you don't, I'm not going to spoil it. <br/>
+        (GPT4 wrote most of the code for this website. Man, I love the future.) <br/>
+       <a href="https://www.chat.openai.org" target="_blank"> - Visit the ChatGPT website -</a> <br/>
+    </section>
+        
+    <br/><br/>
+    <br/><br/> 
+        
+    <section>
+        <b> Contact 👉🏼 </b>
+        <a href="mailto:faction7entertainment@gmail.com" target="_blank"> faction7entertainment@gmail.com </a>
+        <br/> <br/>
+        <b> Store 👕 </b>
+        <a href="f7e.printful.me" target="_blank"> f7e.printful.me </a>
+    </section>
+
+    <br/> <br/>
+    <br/> <br/>
+        
+    </div>
+    
+<footer>
+    <p>© 2020-2025 Will Hooker / Faction Seven (all rights reserved) </p>
+</footer>
+    
+</body>
+</html>
