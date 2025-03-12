@@ -17,8 +17,10 @@
     padding-bottom: 5px;
 }
 
-.tavern li {
-    display: inline-block;
+.tavern nav ul {
+  display: flex; /* Horizontal layout */
+  justify-content: center; /* Center the items */
+  gap: 1.5em; /* Spacing between links */
 }
 
 .tavern p {
