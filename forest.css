@@ -1,0 +1,30 @@
+@import url('https://fonts.googleapis.com/css2?family=Uncial+Antiqua&display=swap');
+
+.forest {
+    background-color: #e8e0c2; /* Warm parchment-like tone */
+    color: #3b5d29; /* Deep forest green */
+    font-family: 'Uncial Antiqua', cursive;
+}
+
+.forest h1, .forest h2, .forest h3 {
+    color: #2a4a18; /* Darker woodland green */
+    text-shadow: 2px 2px 4px rgba(42, 74, 24, 0.5);
+}
+
+.forest p {
+    color: #3b5d29; /* Forest green */
+    background-color: rgba(232, 224, 194, 0.3); /* Subtle aged parchment effect */
+    padding: 10px;
+    border-left: 4px solid #5a3e1b; /* Rich brown accent */
+}
+
+.forest a {
+    color: #6b4e24; /* Rustic bark brown */
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.forest a:hover {
+    color: #2a4a18; /* Deep green highlight */
+    text-decoration: underline;
+}
