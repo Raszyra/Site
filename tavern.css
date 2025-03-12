@@ -17,7 +17,7 @@
     padding-bottom: 5px;
 }
 
-.tavern nav {
+.tavern nav ul li {
   display: flex; /* Horizontal layout */
   justify-content: center; /* Center the items */
   gap: 1.5em; /* Spacing between links */
