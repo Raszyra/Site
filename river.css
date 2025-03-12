@@ -1,0 +1,30 @@
+@import url('https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&display=swap');
+
+.river {
+    background-color: #e0f7fa; /* Pale water blue */
+    color: #1a3d7c; /* Deep river blue */
+    font-family: 'IM Fell English SC', serif;
+}
+
+.river h1, .river h2, .river h3 {
+    color: #0e2f5a; /* Darker blue for contrast */
+    text-shadow: 2px 2px 4px rgba(0, 47, 75, 0.5);
+}
+
+.river p {
+    color: #1a3d7c; /* Deep river blue */
+    background-color: rgba(224, 247, 250, 0.3); /* Transparent water effect */
+    padding: 10px;
+    border-left: 4px solid #0e2f5a;
+}
+
+.river a {
+    color: #126e82; /* River teal */
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.river a:hover {
+    color: #0e2f5a; /* Darker blue on hover */
+    text-decoration: underline;
+}
