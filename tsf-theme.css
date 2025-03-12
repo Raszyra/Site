@@ -1,1 +1,39 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Unicase:wght@700&display=swap');
 
+.tsf-theme {
+    background-color: #f4e1c1; /* Sandy background */
+    padding: 10px 0;
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+.tsf-theme ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.tsf-theme li {
+    display: inline-block;
+}
+
+.tsf-theme a {
+    font-family: 'Cormorant Unicase', serif;
+    font-size: 22px;
+    text-decoration: none;
+    color: #5a3d1a; /* Deep brown text for contrast */
+    background: linear-gradient(to bottom, #e0c197, #c19a6b); /* 3D effect */
+    padding: 10px 20px;
+    border-radius: 5px;
+    box-shadow: 0 4px 0 #8b5e3c, 0 6px 10px rgba(0, 0, 0, 0.3);
+    transition: all 0.1s ease-in-out;
+    display: inline-block;
+}
+
+.tsf-theme a:active {
+    box-shadow: 0 2px 0 #8b5e3c;
+    transform: translateY(2px); /* Depress effect */
+  }
