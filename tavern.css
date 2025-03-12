@@ -21,6 +21,8 @@
   display: flex; /* Horizontal layout */
   justify-content: center; /* Center the items */
   gap: 1.5em; /* Spacing between links */
+  padding: 20px;
+  margin: 10px;
 }
 
 .tavern p {
