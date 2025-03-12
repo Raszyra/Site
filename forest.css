@@ -18,7 +18,7 @@
     background-color: rgba(232, 224, 194, 0.3); /* Subtle aged parchment effect */
     padding: 10px;
     border-left: 4px solid #5a3e1b; /* Rich brown accent */
-    font-family: 'Times New Roman', cursive;
+    font-family: 'Times New Roman', sans-serif;
 }
 
 .forest a {
