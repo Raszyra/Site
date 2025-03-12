@@ -17,13 +17,17 @@
     padding-bottom: 5px;
 }
 
-.tavern nav ul li {
-  display: flex; /* Horizontal layout */
-  justify-content: center; /* Center the items */
-  gap: 1.5em; /* Spacing between links */
-  padding: 20px;
-  margin: 10px;
-  list-style: none;
+.tavern ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.tavern li {
+    display: inline-block;
 }
 
 .tavern p {
