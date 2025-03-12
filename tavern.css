@@ -17,6 +17,10 @@
     padding-bottom: 5px;
 }
 
+.tavern li {
+    display: inline-block;
+}
+
 .tavern p {
     color: #f5e1a4;
     background-color: rgba(110, 74, 43, 0.4); /* Faint beer-stained effect */
