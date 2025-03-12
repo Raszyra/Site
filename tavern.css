@@ -1,0 +1,51 @@
+@import url('https://fonts.googleapis.com/css2?family=Uncial+Antiqua&display=swap');
+
+.tavern {
+    background: radial-gradient(circle, rgba(110, 74, 43, 0.9) 0%, rgba(65, 41, 21, 0.9) 100%); /* Warm wood tones with a worn look */
+    color: #f5e1a4; /* Aged parchment-like text */
+    font-family: 'Uncial Antiqua', cursive;
+    padding: 20px;
+    border: 10px solid #3e2a14; /* Dark wood, like the edge of a table */
+    border-radius: 12px;
+    box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.6); /* Adds depth like a slightly sunken tabletop */
+}
+
+.tavern h1, .tavern h2, .tavern h3 {
+    color: #e6c173; /* Aged golden text */
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7); /* Subtle old-world glow */
+    border-bottom: 3px solid #a87c4f; /* Decorative wood-burnt header underline */
+    padding-bottom: 5px;
+}
+
+.tavern p {
+    color: #f5e1a4;
+    background-color: rgba(110, 74, 43, 0.4); /* Faint beer-stained effect */
+    padding: 10px;
+    border-left: 5px solid #c29f5d; /* A little rustic gold accent */
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.tavern a {
+    display: inline-block;
+    padding: 8px 16px;
+    background: linear-gradient(180deg, #6a4a2d 0%, #3e2a14 100%); /* Aged wood plank button */
+    color: #e0c187; /* Aged gold, like engraved letters */
+    text-decoration: none;
+    font-weight: bold;
+    border: 2px solid #b88c55; /* Aged wood trim */
+    border-radius: 5px;
+    box-shadow: inset 0 -2px 5px rgba(0, 0, 0, 0.4), 0 2px 5px rgba(0, 0, 0, 0.6); /* Depth to look carved */
+    transition: all 0.2s ease;
+}
+
+.tavern a:hover {
+    background: linear-gradient(180deg, #8a6642 0%, #5c3e22 100%); /* Darker wood grain effect */
+    box-shadow: inset 0 -3px 8px rgba(0, 0, 0, 0.5);
+    color: #ffda8b; /* Brighter golden glow */
+    text-shadow: 0px 0px 5px rgba(255, 218, 139, 0.8);
+}
+
+.tavern a:active {
+    transform: translateY(2px); /* Button depression effect */
+    box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.7);
+  }
