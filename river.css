@@ -1,30 +1,45 @@
 @import url('https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&display=swap');
 
 .river {
-    background-color: #e0f7fa; /* Pale water blue */
-    color: #1a3d7c; /* Deep river blue */
+    background-color: #d1e8ff; /* Soft river blue */
+    color: #1f3b60; /* Deep river blue text */
     font-family: 'IM Fell English SC', serif;
+    border: 5px solid #c2b280; /* Sandy riverbank-like border */
+    border-radius: 10px;
+    padding: 20px;
+    margin: 20px 0;
 }
 
 .river h1, .river h2, .river h3 {
-    color: #0e2f5a; /* Darker blue for contrast */
-    text-shadow: 2px 2px 4px rgba(0, 47, 75, 0.5);
+    color: #1a2d44; /* Deep river blue for headings */
+    text-shadow: 2px 2px 4px rgba(24, 38, 60, 0.5);
 }
 
 .river p {
-    color: #1a3d7c; /* Deep river blue */
-    background-color: rgba(224, 247, 250, 0.3); /* Transparent water effect */
+    color: #1f3b60; /* Deep river blue for paragraphs */
+    background-color: rgba(209, 232, 255, 0.7); /* Light blue, water-like background */
     padding: 10px;
-    border-left: 4px solid #0e2f5a;
+    border-left: 4px solid #a88c59; /* Sandy accent for paragraph */
 }
 
 .river a {
-    color: #126e82; /* River teal */
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #3b7bbf; /* Blue button */
+    color: white;
     text-decoration: none;
+    border-radius: 5px;
     font-weight: bold;
+    box-shadow: 0 4px #2f5a7f; /* Button shadow for depth */
+    transition: all 0.2s ease;
 }
 
 .river a:hover {
-    color: #0e2f5a; /* Darker blue on hover */
-    text-decoration: underline;
+    background-color: #2f5a7f; /* Darker blue when hovered */
+    box-shadow: 0 2px #1f3b60; /* Slight shadow for hover */
+}
+
+.river a:active {
+    transform: translateY(2px); /* Button depression effect */
+    box-shadow: 0 1px #1f3b60; /* Deepened shadow when clicked */
 }
