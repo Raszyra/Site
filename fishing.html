@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pixel Fishing</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cormorant:wght@700&display=swap');
+        
+        body {
+            background-color: #87CEEB;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+            margin: 0;
+            font-family: 'Cormorant', serif;
+        }
+        
+        canvas {
+            image-rendering: pixelated;
+            border: 4px solid #4B3F2F;
+            background-color: #3D7E9A;
+        }
+        
+        #score {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 32px;
+            font-weight: bold;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div id="score">Score: 0</div>
+    <canvas id="gameCanvas" width="400" height="300"></canvas>
+
+    <!-- Sound Effects -->
+    <audio id="splashSound" src="splash.mp3"></audio>
+    <audio id="plopSound" src="plop.mp3"></audio>
+    <audio id="reelSound" src="reel.mp3"></audio>
+    <audio id="junkSound" src="junk.mp3"></audio>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        const scoreElement = document.getElementById('score');
+        let score = 0;
+        let fish = [];
+        let hook = { x: -50, y: -50, active: false };
+        let catchTime = 0;
+        let fishCaught = null;
+        let splashes = [];
+
+        function createFish() {
+            return {
+                x: Math.random() * 350 + 25,
+                y: Math.random() * 200 + 50,
+                size: Math.floor(Math.random() * 3) + 1,
+                caught: false
+            };
+        }
+
+        for (let i = 0; i < 5; i++) fish.push(createFish());
+
+        function drawGame() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw water background
+            ctx.fillStyle = "#357C90";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Draw fish
+            fish.forEach(f => {
+                if (!f.caught) {
+                    ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
+                    ctx.beginPath();
+                    ctx.ellipse(f.x, f.y, f.size * 8, f.size * 4, 0, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            });
+
+            // Draw splashes
+            ctx.fillStyle = "rgba(255, 255, 255, 0.6)";
+            splashes.forEach((s, i) => {
+                ctx.beginPath();
+                ctx.arc(s.x, s.y, s.radius, 0, Math.PI * 2);
+                ctx.stroke();
+                s.radius += 1;
+                if (s.radius > 15) splashes.splice(i, 1);
+            });
+
+            // Draw hook
+            if (hook.active) {
+                ctx.fillStyle = "red";
+                ctx.beginPath();
+                ctx.arc(hook.x, hook.y, 5, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            requestAnimationFrame(drawGame);
+        }
+
+        function castLine(x, y) {
+            if (!hook.active) {
+                hook.x = x;
+                hook.y = y;
+                hook.active = true;
+                fishCaught = fish.find(f => Math.abs(f.x - x) < 10 && Math.abs(f.y - y) < 10);
+                if (fishCaught) catchTime = Date.now() + Math.random() * 1000 + 500;
+
+                // Play splash sound and add ripple effect
+                document.getElementById("splashSound").play();
+                splashes.push({ x, y, radius: 5 });
+
+                // Delay plop sound slightly
+                setTimeout(() => {
+                    document.getElementById("plopSound").play();
+                }, 300);
+            }
+        }
+
+        function reelIn() {
+            if (fishCaught && Date.now() >= catchTime) {
+                fishCaught.caught = true;
+                let points = fishCaught.size;
+                
+                if (Math.random() < 0.2) { // 20% chance for junk
+                    points = 0;
+                    alert("You caught a boot!");
+                    document.getElementById("junkSound").play();
+                } else {
+                    document.getElementById("reelSound").play();
+                }
+
+                score += points;
+                scoreElement.textContent = `Score: ${score}`;
+                setTimeout(() => {
+                    fish = fish.map(f => (f.caught ? createFish() : f));
+                    hook.active = false;
+                }, 500);
+            } else {
+                hook.active = false;
+            }
+        }
+
+        canvas.addEventListener('click', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+
+            if (!hook.active) {
+                castLine(x, y);
+            } else {
+                reelIn();
+            }
+        });
+
+        drawGame();
+    </script>
+</body>
+</html>
