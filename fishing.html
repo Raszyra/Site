@@ -71,48 +71,6 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 
-function saveScoreToFirebase(score) {
-    const scoresRef = db.ref("scores");
-
-    // Push new score
-    scoresRef.push({
-        score: score,
-        timestamp: Date.now()  // Add timestamp to sort the scores later
-    });
-}
-
-function getLeaderboardFromFirebase() {
-    const leaderboardList = document.getElementById("leaderboard-list");
-    const scoresRef = db.ref("scores");
-
-    scoresRef.orderByChild("score").limitToLast(5).on("value", (snapshot) => {
-        const scores = snapshot.val();
-        let leaderboard = [];
-
-        for (let id in scores) {
-            leaderboard.push(scores[id].score);
-        }
-
-        // Sort scores in descending order
-        leaderboard = leaderboard.sort((a, b) => b - a);
-
-        // Display leaderboard
-        leaderboardList.innerHTML = leaderboard.map(score => `<li>${score} pts</li>`).join('');
-    });
-}
-
-// Function to be triggered when "Back" button is pressed
-document.getElementById("backButton").addEventListener("click", function(event) {
-    event.preventDefault(); // Prevent the default link behavior (to navigate)
-    
-    // Save the score and refresh the leaderboard
-    saveScoreToFirebase(score);   // Send the score to Firebase
-    getLeaderboardFromFirebase(); // Refresh the leaderboard
-    
-    // After saving and refreshing, you can either navigate or just perform any action
-    window.location.href = "tsf_main.html"; // Redirect to the main page (or your desired URL)
-});
-    
 </script>
     
 </head>
@@ -273,5 +231,59 @@ document.getElementById("backButton").addEventListener("click", function(event) 
 
         drawGame();
     </script>
+
+    <!-- Back Button -->
+<a href="tsf_main" class="river" id="backButton">Back</a>
+
+<!-- Leaderboard Display -->
+<div id="leaderboard">
+    <h2>Leaderboard</h2>
+    <ul id="leaderboard-list"></ul>
+</div>
+
+<script>
+    // Example score value (replace with your actual score variable)
+    let score = 100;
+
+    // Function to save score to Firebase
+    function saveScoreToFirebase(score) {
+        const scoresRef = db.ref("scores");
+        scoresRef.push({
+            score: score,
+            timestamp: Date.now()  // Add timestamp to sort scores later
+        });
+    }
+
+    // Function to get leaderboard from Firebase
+    function getLeaderboardFromFirebase() {
+        const leaderboardList = document.getElementById("leaderboard-list");
+        const scoresRef = db.ref("scores");
+
+        scoresRef.orderByChild("score").limitToLast(5).on("value", (snapshot) => {
+            const scores = snapshot.val();
+            let leaderboard = [];
+
+            for (let id in scores) {
+                leaderboard.push(scores[id].score);
+            }
+
+            leaderboard = leaderboard.sort((a, b) => b - a); // Sort scores in descending order
+
+            leaderboardList.innerHTML = leaderboard.map(score => `<li>${score} pts</li>`).join('');
+        });
+    }
+
+    // Event listener for "Back" button
+    document.getElementById("backButton").addEventListener("click", function(event) {
+        event.preventDefault(); // Prevent the link from navigating immediately
+        
+        // Save the score and refresh leaderboard
+        saveScoreToFirebase(score);
+        getLeaderboardFromFirebase();
+        
+        // Navigate to the main page after saving and refreshing
+        window.location.href = "tsf_main";  // Redirect to your main page
+    });
+</script>
 </body>
 </html>
