@@ -10,20 +10,31 @@
         body {
             background-color: #87CEEB;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
             height: 100vh;
             overflow: hidden;
             margin: 0;
             font-family: 'Cormorant', serif;
         }
-        
+
+        #instructions {
+            font-size: 18px;
+            text-align: center;
+            margin-bottom: 10px;
+            color: white;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 10px;
+            border-radius: 8px;
+            width: 80%;
+        }
+
         canvas {
             image-rendering: pixelated;
             border: 4px solid #4B3F2F;
             background-color: #3D7E9A;
         }
-        
+
         #score {
             position: absolute;
             top: 10px;
@@ -36,6 +47,9 @@
     </style>
 </head>
 <body>
+    <div id="instructions">
+        Click on a fish to cast your line. Wait for the dot to turn <b>green</b>, then click again to reel it in!
+    </div>
     <div id="score">Score: 0</div>
     <canvas id="gameCanvas" width="400" height="300"></canvas>
 
@@ -52,17 +66,20 @@
         const scoreElement = document.getElementById('score');
         let score = 0;
         let fish = [];
-        let hook = { x: -50, y: -50, active: false };
+        let hook = { x: -50, y: -50, active: false, canReel: false };
         let catchTime = 0;
         let fishCaught = null;
         let splashes = [];
+        let floatingScores = [];
 
         function createFish() {
             return {
                 x: Math.random() * 350 + 25,
                 y: Math.random() * 200 + 50,
                 size: Math.floor(Math.random() * 3) + 1,
-                caught: false
+                caught: false,
+                speed: Math.random() * 0.5 + 0.2,
+                direction: Math.random() < 0.5 ? 1 : -1
             };
         }
 
@@ -75,9 +92,12 @@
             ctx.fillStyle = "#357C90";
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            // Draw fish
+            // Move and draw fish
             fish.forEach(f => {
                 if (!f.caught) {
+                    f.x += f.speed * f.direction;
+                    if (f.x < 10 || f.x > 390) f.direction *= -1; // Reverse direction at edges
+
                     ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
                     ctx.beginPath();
                     ctx.ellipse(f.x, f.y, f.size * 8, f.size * 4, 0, 0, Math.PI * 2);
@@ -97,11 +117,20 @@
 
             // Draw hook
             if (hook.active) {
-                ctx.fillStyle = "red";
+                ctx.fillStyle = hook.canReel ? "green" : "red";
                 ctx.beginPath();
                 ctx.arc(hook.x, hook.y, 5, 0, Math.PI * 2);
                 ctx.fill();
             }
+
+            // Draw floating scores
+            ctx.fillStyle = "yellow";
+            ctx.font = "16px Cormorant";
+            floatingScores.forEach((fs, i) => {
+                ctx.fillText(fs.text, fs.x, fs.y);
+                fs.y -= 1; // Move text upward
+                if (fs.y < fs.startY - 20) floatingScores.splice(i, 1);
+            });
 
             requestAnimationFrame(drawGame);
         }
@@ -111,14 +140,17 @@
                 hook.x = x;
                 hook.y = y;
                 hook.active = true;
+                hook.canReel = false;
                 fishCaught = fish.find(f => Math.abs(f.x - x) < 10 && Math.abs(f.y - y) < 10);
-                if (fishCaught) catchTime = Date.now() + Math.random() * 1000 + 500;
+                
+                if (fishCaught) {
+                    catchTime = Date.now() + Math.random() * 1000 + 500;
+                    setTimeout(() => { hook.canReel = true; }, catchTime - Date.now());
+                }
 
-                // Play splash sound and add ripple effect
                 document.getElementById("splashSound").play();
                 splashes.push({ x, y, radius: 5 });
 
-                // Delay plop sound slightly
                 setTimeout(() => {
                     document.getElementById("plopSound").play();
                 }, 300);
@@ -126,26 +158,30 @@
         }
 
         function reelIn() {
-            if (fishCaught && Date.now() >= catchTime) {
+            if (hook.canReel && fishCaught) {
                 fishCaught.caught = true;
                 let points = fishCaught.size;
                 
                 if (Math.random() < 0.2) { // 20% chance for junk
                     points = 0;
-                    alert("You caught a boot!");
+                    floatingScores.push({ text: "Junk!", x: hook.x, y: hook.y, startY: hook.y });
                     document.getElementById("junkSound").play();
                 } else {
+                    floatingScores.push({ text: `+${points}`, x: hook.x, y: hook.y, startY: hook.y });
                     document.getElementById("reelSound").play();
                 }
 
                 score += points;
                 scoreElement.textContent = `Score: ${score}`;
+                
                 setTimeout(() => {
                     fish = fish.map(f => (f.caught ? createFish() : f));
                     hook.active = false;
+                    hook.canReel = false;
                 }, 500);
             } else {
                 hook.active = false;
+                hook.canReel = false;
             }
         }
 
