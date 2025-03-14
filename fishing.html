@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pixel Fishing</title>
+    <link rel="stylesheet" href="river.css">
+        
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Cormorant:wght@700&display=swap');
         
@@ -47,11 +49,13 @@
     </style>
 </head>
 <body>
+    <div id="score">Score: 0</div>
+    <br/>
     <div id="instructions">
         Click on a fish to cast your line. Wait for the dot to turn <b>green</b>, then click again to reel it in!
     </div>
-    <div id="score">Score: 0</div>
     <canvas id="gameCanvas" width="400" height="300"></canvas>
+    <a href="tsf_main.html" class="river"> Back </a>
 
     <!-- Sound Effects -->
     <audio id="splashSound" src="splash.mp3"></audio>
