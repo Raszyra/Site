@@ -47,6 +47,74 @@
             color: white;
         }
     </style>
+    
+<script>
+    // Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyCz8IjOmRz9MkVZDxkom_RY3FTu9oTQxPU",
+  authDomain: "fishing-game-scores.firebaseapp.com",
+  projectId: "fishing-game-scores",
+  storageBucket: "fishing-game-scores.firebasestorage.app",
+  messagingSenderId: "522514635625",
+  appId: "1:522514635625:web:407f8debce446ecad53bf8",
+  measurementId: "G-TSQY93EG7B"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
+
+function saveScoreToFirebase(score) {
+    const scoresRef = db.ref("scores");
+
+    // Push new score
+    scoresRef.push({
+        score: score,
+        timestamp: Date.now()  // Add timestamp to sort the scores later
+    });
+}
+
+function getLeaderboardFromFirebase() {
+    const leaderboardList = document.getElementById("leaderboard-list");
+    const scoresRef = db.ref("scores");
+
+    scoresRef.orderByChild("score").limitToLast(5).on("value", (snapshot) => {
+        const scores = snapshot.val();
+        let leaderboard = [];
+
+        for (let id in scores) {
+            leaderboard.push(scores[id].score);
+        }
+
+        // Sort scores in descending order
+        leaderboard = leaderboard.sort((a, b) => b - a);
+
+        // Display leaderboard
+        leaderboardList.innerHTML = leaderboard.map(score => `<li>${score} pts</li>`).join('');
+    });
+}
+
+// Function to be triggered when "Back" button is pressed
+document.getElementById("backButton").addEventListener("click", function(event) {
+    event.preventDefault(); // Prevent the default link behavior (to navigate)
+    
+    // Save the score and refresh the leaderboard
+    saveScoreToFirebase(score);   // Send the score to Firebase
+    getLeaderboardFromFirebase(); // Refresh the leaderboard
+    
+    // After saving and refreshing, you can either navigate or just perform any action
+    window.location.href = "tsf_main.html"; // Redirect to the main page (or your desired URL)
+});
+    
+</script>
+    
 </head>
 <body>
     <div id="score">Score: 0</div>
@@ -57,7 +125,7 @@
     <br/>
     <canvas id="gameCanvas" width="400" height="300"></canvas>
     <br/>    
-    <a href="tsf_main.html" class="river"> Back </a>
+    <a href="tsf_main.html" class="river" id="backButton"> Back </a>
 
     <!-- Sound Effects -->
     <audio id="splashSound" src="splash.mp3"></audio>
