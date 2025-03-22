@@ -1,0 +1,118 @@
+/* Global Styles */
+body {
+    background: url('images/dragonskin.jpg') repeat;
+    color: gold;
+    font-family: 'Noto Serif', serif; /* Body text font */
+    text-align: center;
+    margin: 0;
+    padding: 0;
+}
+
+/* Header */
+header {
+    background-color: rgba(139, 0, 0, 0.9);
+    padding: 20px;
+}
+
+.header-title {
+    font-family: 'Zhi Mang Xing', cursive; /* Header font for bold, Chinese-style */
+    font-size: 4em;
+    color: gold;
+    margin: 0;
+}
+
+/* Navigation */
+nav a {
+    display: inline-block;
+    margin: 10px;
+    padding: 10px 20px;
+    background: url('images/stone-texture.jpg') no-repeat center;
+    background-size: cover;
+    color: gold;
+    text-decoration: none;
+    font-size: 20px;
+    border-radius: 5px;
+    font-weight: bold;
+    border: 2px solid #8B0000;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+nav a:hover {
+    background-color: darkred;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.4);
+}
+
+/* Content */
+.content {
+    width: 80%;
+    margin: auto;
+    padding: 20px;
+    background-color: rgba(255, 255, 224, 0.85);
+    border-radius: 10px;
+    border: 10px solid transparent;
+    background-clip: padding-box;
+    position: relative;
+}
+
+.content:before {
+    content: "";
+    position: absolute;
+    top: -15px;
+    bottom: -15px;
+    left: -15px;
+    right: -15px;
+    background: url('images/chinese-pattern-border.png') repeat;
+    z-index: -1;
+    border-radius: 15px;
+}
+
+img {
+    width: 350px;
+    border: 5px solid maroon;
+}
+
+/* Summary Text */
+.summary {
+    font-size: 22px;
+    color: maroon;
+    margin-top: 20px;
+}
+
+/* Call-to-Action Button */
+.cta {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 15px 30px;
+    background-color: darkred;
+    color: gold;
+    font-size: 20px;
+    text-decoration: none;
+    font-weight: bold;
+    border-radius: 5px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.cta:hover {
+    background-color: goldenrod;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.4);
+}
+
+/* Footer */
+footer {
+    margin-top: 20px;
+    color: gold;
+}
+
+footer a {
+    color: gold;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+footer a:hover {
+    text-decoration: underline;
+}
