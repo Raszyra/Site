@@ -1,1 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lord Ironbark (home)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Zhi+Mang+Xing&family=Noto+Serif&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="li_main-styles.css">
+</head>
 
+<style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        .bio-container {
+            width: 60%;
+            display: flex;
+            align-items: center;
+            background: white;
+            margin: 10px 0;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 2px 2px 10px rgba(0,0,0,0.1);
+        }
+        .bio-container img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            margin: 0 20px;
+        }
+        .bio-container:nth-child(odd) {
+            flex-direction: row;
+        }
+        .bio-container:nth-child(even) {
+            flex-direction: row-reverse;
+        }
+        .bio-text {
+            max-width: 60%;
+        }
+    </style>
+</head>
+<body>
+  
+<body>
+
+<header>
+    <nav>
+        <a href="index.html" class="logo">HOME</a>
+        <a href="li_bios.html">BIOS</a>
+        <a href="#books">BOOKS</a>
+        <a href="about.html">AUTHOR</a>
+    </nav>
+    <div class="hero-section">
+        <div class="hero-text">
+            <h1>Character Bios</h1>
+            <p>Meet the cast:</p>
+        </div>
+    </div>
+</header>
+
+  <div class="bio-container">
+        <img src="character1.jpg" alt="Character 1">
+        <div class="bio-text">
+            <h3>Character Name 1</h3>
+            <p>Short bio or description of the character goes here.</p>
+        </div>
+    </div>
+    <div class="bio-container">
+        <img src="character2.jpg" alt="Character 2">
+        <div class="bio-text">
+            <h3>Character Name 2</h3>
+            <p>Another short bio with different alignment.</p>
+        </div>
+    </div>
+    <div class="bio-container">
+        <img src="character3.jpg" alt="Character 3">
+        <div class="bio-text">
+            <h3>Character Name 3</h3>
+            <p>Yet another character description here.</p>
+        </div>
+    </div>
+
+<section id="download" class="download-section">
+    <h2> Get the Latest Book: </h2>
+    <a href="https://docs.google.com/document/d/1pg2VUElHrKYY3M0-YGJIZEZ_LpDVLgEo83NiMF7Of7c/edit?usp=drivesdk" class="cta">Download Now</a>
+</section>
+
+<footer>
+    <p>© Will Hooker / Faction Seven Entertainment 2023-25</p>
+    <p><a href="index.html">Faction Seven</a></p>
+</footer>
+
+</body>
+</html>
