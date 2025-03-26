@@ -20,6 +20,14 @@ canvas {
 </style>
 
 <script>
+
+function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+}
+
+window.addEventListener('resize', resizeCanvas);
+resizeCanvas();
     
 function createStars(containerSelector, numStars) {
     const container = document.querySelector(containerSelector);
@@ -29,8 +37,8 @@ function createStars(containerSelector, numStars) {
         star.classList.add("star");
 
         const size = Math.random() * 2 + 1; // Random star size
-        const x = Math.random() * 100; // Position across width
-        const y = Math.random() * 100; // Position across height
+        const x = Math.random() * canvas.width; // Position across width
+        const y = Math.random() * canvas.height; // Position across height
         const opacity = Math.random() * 0.5 + 0.5; // Random opacity
 
         star.style.width = `${size}px`;
