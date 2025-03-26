@@ -26,9 +26,6 @@ function resizeCanvas() {
     canvas.height = window.innerHeight;
 }
 
-window.addEventListener('resize', resizeCanvas);
-resizeCanvas();
-    
 function createStars(containerSelector, numStars) {
     const container = document.querySelector(containerSelector);
 
@@ -37,20 +34,20 @@ function createStars(containerSelector, numStars) {
         star.classList.add("star");
 
         const size = Math.random() * 2 + 1; // Random star size
-        const x = Math.random() * canvas.width; // Position across width
-        const y = Math.random() * canvas.height; // Position across height
+        const x = Math.random() * window.innerWidth; // Position across width
+        const y = Math.random() * window.innerHeight; // Position across height
         const opacity = Math.random() * 0.5 + 0.5; // Random opacity
 
         star.style.width = `${size}px`;
         star.style.height = `${size}px`;
-        star.style.left = `${x}%`;
-        star.style.top = `${y}%`;
+        star.style.left = `${x}px`;
+        star.style.top = `${y}px`;
         star.style.opacity = opacity;
 
         container.appendChild(star);
     }
 }
-    
+
 document.addEventListener("DOMContentLoaded", () => {
     createStars(".stars", 100);
     createStars(".stars-deep", 150);
