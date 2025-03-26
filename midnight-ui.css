@@ -12,7 +12,8 @@
 }
 
 body {
-    background: var(--bg-gradient);
+    background: var(--bg-gradient) no-repeat center center fixed;
+    background-size: cover;
     color: var(--fg-color);
     font-family: 'Poppins', sans-serif;
     display: flex;
