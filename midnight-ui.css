@@ -1,0 +1,118 @@
+:root {
+    --bg-color: #0b0f1a; /* Deep space blue */
+    --bg-gradient: linear-gradient(135deg, #0b0f1a, #1a1f3a);
+    --fg-color: #d6eaff; /* Soft starlight */
+    --accent-color: #00f7ff; /* Neon cyan */
+    --hover-color: #008cff;
+    --border-color: rgba(0, 247, 255, 0.3);
+    --glass-bg: rgba(255, 255, 255, 0.08);
+    --glass-border: rgba(255, 255, 255, 0.2);
+    --box-shadow: 0 0 15px rgba(0, 247, 255, 0.4);
+    --transition-speed: 0.3s ease-in-out;
+}
+
+body {
+    background: var(--bg-gradient);
+    color: var(--fg-color);
+    font-family: 'Poppins', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+/* Futuristic Card */
+.card {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(10px);
+    padding: 20px;
+    width: 300px;
+    text-align: center;
+    border-radius: 15px;
+    box-shadow: var(--box-shadow);
+    transition: var(--transition-speed);
+}
+
+.card:hover {
+    box-shadow: 0 0 20px var(--accent-color);
+    transform: translateY(-5px);
+}
+
+/* Buttons */
+button {
+    background: var(--accent-color);
+    border: none;
+    padding: 10px 20px;
+    color: #0b0f1a;
+    font-size: 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: var(--transition-speed);
+}
+
+button:hover {
+    background: var(--hover-color);
+    box-shadow: 0 0 10px var(--accent-color);
+}
+
+/* Headings */
+h1 {
+    font-size: 1.8rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--accent-color);
+    text-shadow: 0 0 10px var(--accent-color);
+}
+
+/* Links */
+a {
+    color: var(--accent-color);
+    text-decoration: none;
+    transition: var(--transition-speed);
+}
+
+a:hover {
+    color: var(--hover-color);
+    text-shadow: 0 0 8px var(--accent-color);
+}
+
+/* Input Fields */
+input {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--glass-border);
+    padding: 10px;
+    border-radius: 5px;
+    color: var(--fg-color);
+    outline: none;
+    transition: var(--transition-speed);
+}
+
+input:focus {
+    border-color: var(--accent-color);
+    box-shadow: 0 0 10px var(--accent-color);
+}
+
+/* Navigation Bar */
+.navbar {
+    background: rgba(11, 15, 26, 0.9);
+    padding: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: var(--box-shadow);
+    border-bottom: 2px solid var(--border-color);
+}
+
+.navbar a {
+    margin: 0 15px;
+}
+
+/* Footer */
+.footer {
+    text-align: center;
+    padding: 15px;
+    border-top: 2px solid var(--border-color);
+    background: rgba(11, 15, 26, 0.9);
+}

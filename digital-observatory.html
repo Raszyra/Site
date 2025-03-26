@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Midnight UI - The Digital Observatory</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="midnight-ui.css">
+    <style>
+        body {
+            text-align: center;
+            overflow-x: hidden;
+        }
+        .stars {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            background: url('https://source.unsplash.com/1600x900/?stars,night') no-repeat center center;
+            background-size: cover;
+            opacity: 0.2;
+            z-index: -1;
+        }
+        .container {
+            max-width: 800px;
+            margin: 40px auto;
+        }
+        .glow-text {
+            font-size: 1.5rem;
+            color: var(--accent-color);
+            text-shadow: 0 0 15px var(--accent-color);
+        }
+    </style>
+</head>
+<body>
+    <div class="stars"></div>
+    
+    <nav class="navbar">
+        <h1>Digital Observatory</h1>
+        <div>
+            <a href="#">Home</a>
+            <a href="#">Thoughts</a>
+            <a href="#">Dreams</a>
+            <a href="#">Contact</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="card">
+            <h1>Welcome, Traveler</h1>
+            <p>You've found your way to the **Digital Observatory**—a quiet place to gaze into the depths of thought, art, and the cosmos.</p>
+            <button onclick="document.getElementById('secret').style.display='block'">Reveal a Secret</button>
+        </div>
+
+        <div class="card" id="secret" style="display: none;">
+            <h2 class="glow-text">"We are all made of star-stuff."</h2>
+            <p>—Carl Sagan</p>
+        </div>
+
+        <div class="card">
+            <h2>Current Thought:</h2>
+            <p>What if an astronaut left Earth on a mission, only to return and find that humanity had disappeared?</p>
+            <input type="text" placeholder="Share your own thought...">
+        </div>
+    </div>
+
+    <footer class="footer">
+        <p>🚀 Midnight UI - Crafted Among the Stars</p>
+    </footer>
+</body>
+</html>
