@@ -20,18 +20,6 @@ canvas {
 </style>
 
 <script>
-const canvas = document.getElementById('starCanvas');
-const ctx = canvas.getContext('2d');
-
-function resizeCanvas() {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-}
-
-window.addEventListener('resize', resizeCanvas);
-resizeCanvas(); // Ensure it starts at the right size
-
-ctx.clearRect(0, 0, canvas.width, canvas.height);
     
 function createStars(containerSelector, numStars) {
     const container = document.querySelector(containerSelector);
