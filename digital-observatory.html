@@ -30,6 +30,17 @@ function createStars(containerSelector, numStars) {
     }
 }
 
+const canvas = document.getElementById('starCanvas');
+const ctx = canvas.getContext('2d');
+
+function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+}
+
+window.addEventListener('resize', resizeCanvas);
+resizeCanvas(); // Ensure it starts at the right size
+    
 document.addEventListener("DOMContentLoaded", () => {
     createStars(".stars", 100);
     createStars(".stars-deep", 150);
