@@ -8,6 +8,17 @@
     <link rel="stylesheet" href="midnight-ui.css">
 
 <script>
+const canvas = document.getElementById('starCanvas');
+const ctx = canvas.getContext('2d');
+
+function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+}
+
+window.addEventListener('resize', resizeCanvas);
+resizeCanvas(); // Ensure it starts at the right size
+    
 function createStars(containerSelector, numStars) {
     const container = document.querySelector(containerSelector);
 
@@ -29,17 +40,6 @@ function createStars(containerSelector, numStars) {
         container.appendChild(star);
     }
 }
-
-const canvas = document.getElementById('starCanvas');
-const ctx = canvas.getContext('2d');
-
-function resizeCanvas() {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-}
-
-window.addEventListener('resize', resizeCanvas);
-resizeCanvas(); // Ensure it starts at the right size
     
 document.addEventListener("DOMContentLoaded", () => {
     createStars(".stars", 100);
