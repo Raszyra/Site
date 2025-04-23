@@ -1,0 +1,38 @@
+/* The Ghost of Grimhallow - Victorian Spooky Adventure Theme */
+
+@import url('https://fonts.googleapis.com/css2?family=UnifrakturCook:wght@700&family=EB+Garamond&display=swap');
+
+:root { --bg-color: #111111; --text-color: #eae0d5; --accent-color: #8a4b3f; --link-color: #c9b79c; --hover-color: #d6c8b0; --header-font: 'UnifrakturCook', cursive; --body-font: 'EB Garamond', serif; --shadow: 0 0 15px rgba(0, 0, 0, 0.5); }
+
+body { margin: 0; padding: 0; background-color: var(--bg-color); color: var(--text-color); font-family: var(--body-font); line-height: 1.7; background-image: url('https://www.transparenttextures.com/patterns/dark-wood.png'); background-repeat: repeat; }
+
+header { background-color: #000000aa; padding: 2rem; text-align: center; box-shadow: var(--shadow); }
+
+header h1 { font-family: var(--header-font); font-size: 3.5rem; color: var(--accent-color); margin: 0; letter-spacing: 1px; text-shadow: 2px 2px #000000; }
+
+nav { text-align: center; margin: 1rem 0; }
+
+nav a { font-size: 1.2rem; color: var(--link-color); margin: 0 1rem; text-decoration: none; transition: color 0.3s ease; }
+
+nav a:hover { color: var(--hover-color); }
+
+main { max-width: 800px; margin: 3rem auto; padding: 0 2rem; background-color: #1b1b1b; border: 1px solid #2c2c2c; box-shadow: var(--shadow); }
+
+h2, h3 { color: var(--accent-color); font-family: var(--header-font); }
+
+p { margin-bottom: 1.5rem; }
+
+footer { text-align: center; padding: 2rem; font-size: 0.9rem; color: #777; background-color: #000000aa; box-shadow: var(--shadow); margin-top: 4rem; }
+
+/* Optional: Victorian ornamentation */ hr { border: none; border-top: 2px dashed var(--accent-color); margin: 3rem 0; }
+
+blockquote { border-left: 4px solid var(--accent-color); margin: 2rem; padding-left: 1rem; font-style: italic; background-color: #222222; color: var(--hover-color); }
+
+img { max-width: 100%; height: auto; display: block; margin: 2rem auto; box-shadow: var(--shadow); border: 1px solid #333; }
+
+/* Spooky hover glow for links */ a:hover { text-shadow: 0 0 5px var(--hover-color); }
+
+/* Title underline animation */ header h1::after { content: ''; display: block; width: 60px; height: 2px; background: var(--accent-color); margin: 1rem auto 0; animation: flicker 2s infinite alternate; }
+
+@keyframes flicker { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 0.8; } }
+
