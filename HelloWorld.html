@@ -1,0 +1,240 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Hello, World! — Playtest Prototype</title>
+  <style>
+    :root{--bg:#0f1724;--card:#0b1220;--accent:#0ea5f9;--muted:#94a3b8;--panel:#071024}
+    *{box-sizing:border-box;font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif}
+    body{margin:0;background:linear-gradient(180deg,#031025 0%, #081426 60%);color:#e6eef8}
+    .wrap{max-width:1100px;margin:20px auto;padding:18px;}
+    header{display:flex;align-items:center;gap:16px;margin-bottom:12px}
+    h1{margin:0;font-size:20px}
+    .layout{display:grid;grid-template-columns:240px 1fr 320px;gap:12px}
+    .panel{background:linear-gradient(180deg,var(--panel),#0b1a2b);padding:10px;border-radius:10px;box-shadow:0 6px 18px rgba(2,6,23,.6)}
+    .deck-list, .hand, .play-area{min-height:120px}
+    .deck{padding:8px;border-radius:8px;background:linear-gradient(180deg,var(--card),#042032);margin-bottom:8px}
+    .card{display:inline-block;padding:8px 10px;margin:6px;border-radius:8px;background:#072033;border:1px solid rgba(255,255,255,.04);cursor:pointer;min-width:80px}
+    .card.small{padding:6px;font-size:13px}
+    .toolbar{display:flex;gap:8px;margin-bottom:8px}
+    button{background:var(--accent);color:#042032;border:none;padding:8px 10px;border-radius:8px;cursor:pointer}
+    button.secondary{background:#1f2937;color:#cfe9ff}
+    .log{height:200px;overflow:auto;padding:6px;background:rgba(255,255,255,.02);border-radius:6px}
+    .players{display:flex;gap:6px}
+    .player{padding:8px;border-radius:8px;background:#041826;cursor:pointer}
+    .player.active{outline:2px solid var(--accent)}
+    .program-slot{min-height:36px;padding:6px;border-radius:6px;background:rgba(255,255,255,.01);margin:6px 0}
+    .status{font-size:13px;color:var(--muted)}
+    footer{margin-top:12px;color:var(--muted);font-size:13px}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Hello, World! — Playtest Prototype</h1>
+      <div class="status">Quick test harness: draw/play/program completion. Not all rules implemented — tweak away.</div>
+    </header><div class="layout">
+  <aside class="panel">
+    <div class="toolbar">
+      <button id="drawMainBtn">Draw Main</button>
+      <button id="drawLangBtn" class="secondary">Draw Language</button>
+    </div>
+    <div>
+      <strong>Decks</strong>
+      <div class="deck-list" id="deckList"></div>
+    </div>
+
+    <hr />
+    <div>
+      <strong>Players</strong>
+      <div class="players" id="playersList"></div>
+      <div style="margin-top:8px">Current player: <span id="curPlayerName"></span></div>
+      <div style="margin-top:8px" class="status">Completed Programs: <span id="completeCount">0</span></div>
+    </div>
+  </aside>
+
+  <main class="panel">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <strong>Play Area</strong>
+      <div class="status">Select a card in your hand to play it. Then click "Play Selected".</div>
+    </div>
+
+    <div class="play-area" id="playArea">
+      <div><strong>Programs in progress</strong></div>
+      <div id="programs"></div>
+    </div>
+
+    <hr />
+
+    <div>
+      <strong>Your Hand</strong>
+      <div class="hand" id="hand"></div>
+      <div style="margin-top:8px">
+        <button id="playCardBtn">Play Selected</button>
+        <button id="discardBtn" class="secondary">Discard Selected</button>
+        <button id="endTurnBtn" class="secondary">End Turn</button>
+      </div>
+    </div>
+  </main>
+
+  <aside class="panel">
+    <div><strong>Event Log</strong></div>
+    <div class="log" id="log"></div>
+    <hr />
+    <div>
+      <strong>Controls</strong>
+      <div style="margin-top:8px">
+        <label>Players: <select id="playerCount"><option>2</option><option selected>3</option><option>4</option></select></label>
+        <button id="resetBtn" class="secondary">New Game</button>
+      </div>
+    </div>
+  </aside>
+</div>
+
+<footer>Prototype v1 — will expand cards, rules and multiplayer later. Tell me what to change.</footer>
+
+  </div><script>
+// Minimal prototype data model
+const SAMPLE_VARIABLES = [
+  {id:'int1',type:'Integer',value:1,label:'Integer 1'},
+  {id:'int10',type:'Integer',value:10,label:'Integer 10'},
+  {id:'boolT',type:'Boolean',value:1,label:'Boolean True'},
+  {id:'boolF',type:'Boolean',value:0,label:'Boolean False'},
+  {id:'strHello',type:'String',value:11,label:'"Hello World!" [11]'},
+  {id:'imgKitten',type:'Media',value:2,label:'kitten.jpg [2MB]'},
+  {id:'classProj',type:'Class',value:9,label:'Project Class [9]'}
+];
+
+const SAMPLE_FUNCTIONS = [
+  {id:'fn_playVideo',type:'Function',difficulty:'Medium',requires:[{type:'Media'}],mult:2,label:'playVideo'},
+  {id:'fn_calculate',type:'Function',difficulty:'Easy',requires:[{type:'Integer'},{type:'Integer'}],mult:1,label:'Calculator'},
+  {id:'fn_newDB',type:'Function',difficulty:'Hard',requires:[{type:'Class'},{type:'String'}],mult:3,label:'newDatabase'}
+];
+
+const SAMPLE_EVENTS = [
+  {id:'ev_syntax',type:'Event',label:'Syntax Error',effect:'skip_next'},
+  {id:'ev_party',type:'Event',label:'Office Party',effect:'points10'}
+];
+
+let state = {
+  players:[],
+  curPlayer:0,
+  mainDeck:[],
+  langDecks:[],
+};
+
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a}
+
+function newGame(playerCount){
+  state.players = [];
+  for(let p=0;p<playerCount;p++) state.players.push({id:p,name:'P'+(p+1),hand:[],programs:[],completed:0});
+  state.curPlayer = 0;
+  // build decks
+  state.mainDeck = shuffle([
+    ...SAMPLE_EVENTS.map(c=>({...c,origin:'main'})),
+    ...SAMPLE_VARIABLES.map(c=>({...c,origin:'main'})),
+    ...SAMPLE_FUNCTIONS.map(c=>({...c,origin:'main'}))
+  ]);
+  // language decks: small sample per player
+  state.langDecks = [];
+  for(let p=0;p<playerCount;p++){
+    state.langDecks.push(shuffle([
+      {id:'lang_fn_'+p,label:'Function_A_'+p,type:'Function',requires:[]},
+      {id:'lang_var_'+p,label:'Integer_5',type:'Integer',value:5}
+    ]));
+  }
+  // deal 5 cards each
+  for(let i=0;i<5;i++){
+    for(let p=0;p<playerCount;p++) drawFromMain(p);
+  }
+  renderAll();
+  log('New game started with '+playerCount+' players.');
+}
+
+function drawFromMain(playerId){
+  const card = state.mainDeck.shift();
+  if(!card) return null;
+  state.players[playerId].hand.push(card);
+  return card;
+}
+function drawFromLang(playerId){
+  const deck = state.langDecks[playerId];
+  const card = deck.shift();
+  if(card) state.players[playerId].hand.push(card);
+  return card;
+}
+
+function renderAll(){
+  // decks
+  const deckList = document.getElementById('deckList'); deckList.innerHTML='';
+  const mainSummary = document.createElement('div'); mainSummary.className='deck'; mainSummary.innerText='Main Deck: '+state.mainDeck.length+' cards'; deckList.appendChild(mainSummary);
+  state.langDecks.forEach((d,i)=>{const el=document.createElement('div');el.className='deck';el.innerText='Lang '+(i+1)+': '+d.length;deckList.appendChild(el)});
+
+  // players
+  const playersList = document.getElementById('playersList'); playersList.innerHTML='';
+  state.players.forEach((pl,i)=>{const el=document.createElement('div');el.className='player'+(i===state.curPlayer?' active':'');el.innerText=pl.name;el.onclick=()=>{state.curPlayer=i;renderAll()};playersList.appendChild(el)});
+  document.getElementById('curPlayerName').innerText=state.players[state.curPlayer].name;
+  document.getElementById('completeCount').innerText=state.players.map(p=>p.completed).join(', ');
+
+  // hand
+  const hand = document.getElementById('hand'); hand.innerHTML='';
+  const curHand = state.players[state.curPlayer].hand;
+  curHand.forEach((c,idx)=>{
+    const el=document.createElement('div');el.className='card small';el.innerText=(c.label||c.id)+"\n("+c.type+")";el.onclick=()=>selectCard(idx);hand.appendChild(el);
+  });
+
+  // programs
+  const programs = document.getElementById('programs'); programs.innerHTML='';
+  state.players[state.curPlayer].programs.forEach((prog,pi)=>{
+    const slot=document.createElement('div');slot.className='program-slot';slot.innerHTML='<strong>'+ (prog.name||('Program #'+(pi+1)))+'</strong>\n'+prog.cards.map(x=>x.label||x.id).join(' | ');
+    programs.appendChild(slot);
+  });
+
+  // log remains
+}
+
+let selectedCardIndex = null;
+function selectCard(i){ selectedCardIndex=i; log('Selected card index '+i); highlightSelection(); }
+function highlightSelection(){ const handEls=document.getElementById('hand').children; for(let k=0;k<handEls.length;k++){handEls[k].style.outline = (k===selectedCardIndex)?'2px solid var(--accent)':''} }
+
+function playSelected(){ if(selectedCardIndex===null) return alert('Select a card first'); const player = state.players[state.curPlayer]; const card = player.hand.splice(selectedCardIndex,1)[0]; selectedCardIndex=null; // naive: add card to player's first program or create one
+  if(player.programs.length===0) player.programs.push({name:'Prog'+(player.programs.length+1),cards:[card]}); else player.programs[0].cards.push(card);
+  log(player.name+' played '+(card.label||card.id)); checkProgramCompletion(state.curPlayer,0);
+  renderAll(); }
+
+function discardSelected(){ if(selectedCardIndex===null) return alert('Select a card to discard'); const player = state.players[state.curPlayer]; const card = player.hand.splice(selectedCardIndex,1)[0]; selectedCardIndex=null; log(player.name+' discarded '+(card.label||card.id)); renderAll(); }
+
+function checkProgramCompletion(playerId,progIndex){ const player = state.players[playerId]; const prog = player.programs[progIndex]; // simple rule: needs at least one Function card and at least one Variable
+  const hasFn = prog.cards.some(c=>c.type==='Function');
+  const hasVar = prog.cards.some(c=>['Integer','Boolean','String','Media','Class'].includes(c.type));
+  if(hasFn && hasVar){ // score calculation: sum of variable values * function multiplier (use first function)
+    const vars = prog.cards.filter(c=>['Integer','Boolean','String','Media','Class'].includes(c.type));
+    const varSum = vars.reduce((s,c)=>s+ (c.value||0),0);
+    const fn = prog.cards.find(c=>c.type==='Function');
+    const mult = fn ? (fn.mult||1) : 1;
+    const score = varSum * mult;
+    player.completed += 1; player.completed = player.completed || 0; player.score = (player.score||0)+score; player.programs.splice(progIndex,1);
+    log(player.name+' completed a program for '+score+' points! Total score: '+player.score);
+    // simple win check
+    if(player.completed>=3){ log(player.name+' has completed 3 programs and wins!'); }
+  }
+}
+
+function endTurn(){ state.curPlayer = (state.curPlayer+1)%state.players.length; selectedCardIndex=null; renderAll(); log('Turn passed to '+state.players[state.curPlayer].name); }
+
+function log(txt){ const l=document.getElementById('log'); const p=document.createElement('div'); p.innerText = (new Date()).toLocaleTimeString()+' — '+txt; l.prepend(p); }
+
+// button hooks
+document.getElementById('drawMainBtn').onclick = ()=>{ const c = drawFromMain(state.curPlayer); if(c) log(state.players[state.curPlayer].name+' drew from main: '+(c.label||c.id)); renderAll(); };
+document.getElementById('drawLangBtn').onclick = ()=>{ const c = drawFromLang(state.curPlayer); if(c) log(state.players[state.curPlayer].name+' drew from their language deck: '+(c.label||c.id)); renderAll(); };
+document.getElementById('playCardBtn').onclick = playSelected;
+document.getElementById('discardBtn').onclick = discardSelected;
+document.getElementById('endTurnBtn').onclick = endTurn;
+document.getElementById('resetBtn').onclick = ()=>{ const pc = parseInt(document.getElementById('playerCount').value,10); newGame(pc); };
+
+// init
+newGame(parseInt(document.getElementById('playerCount').value,10));
+</script></body>
+</html>
