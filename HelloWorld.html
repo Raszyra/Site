@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Hello, World! — Playtest Prototype (Rules v1)</title>
+  <title>Hello, World! — Playtest Prototype</title>
   <style>
     :root{--bg:#0f1724;--card:#0b1220;--accent:#0ea5f9;--muted:#94a3b8;--panel:#071024}
     *{box-sizing:border-box;font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif}
@@ -11,7 +11,7 @@
     .wrap{max-width:1100px;margin:20px auto;padding:18px;}
     header{display:flex;align-items:center;gap:16px;margin-bottom:12px}
     h1{margin:0;font-size:20px}
-    .layout{display:grid;grid-template-columns:260px 1fr 320px;gap:12px}
+    .layout{display:grid;grid-template-columns:240px 1fr 320px;gap:12px}
     .panel{background:linear-gradient(180deg,var(--panel),#0b1a2b);padding:10px;border-radius:10px;box-shadow:0 6px 18px rgba(2,6,23,.6)}
     .deck-list, .hand, .play-area{min-height:120px}
     .deck{padding:8px;border-radius:8px;background:linear-gradient(180deg,var(--card),#042032);margin-bottom:8px}
@@ -20,642 +20,212 @@
     .toolbar{display:flex;gap:8px;margin-bottom:8px}
     button{background:var(--accent);color:#042032;border:none;padding:8px 10px;border-radius:8px;cursor:pointer}
     button.secondary{background:#1f2937;color:#cfe9ff}
-    .log{height:220px;overflow:auto;padding:6px;background:rgba(255,255,255,.02);border-radius:6px}
-    .players{display:flex;gap:6px;flex-wrap:wrap}
+    .log{height:200px;overflow:auto;padding:6px;background:rgba(255,255,255,.02);border-radius:6px}
+    .players{display:flex;gap:6px}
     .player{padding:8px;border-radius:8px;background:#041826;cursor:pointer}
     .player.active{outline:2px solid var(--accent)}
     .program-slot{min-height:36px;padding:6px;border-radius:6px;background:rgba(255,255,255,.01);margin:6px 0}
     .status{font-size:13px;color:var(--muted)}
     footer{margin-top:12px;color:var(--muted);font-size:13px}
-    .controls{display:flex;gap:6px;flex-wrap:wrap}
-    .small{font-size:12px;color:var(--muted)}
-    .selected{outline:2px solid var(--accent)}
-    .card-grid{display:flex;flex-wrap:wrap;gap:6px}
-    .panel-header{display:flex;justify-content:space-between;align-items:center}
-    label{font-size:13px}
-    .right-col .log {height:140px}
   </style>
 </head>
 <body>
   <div class="wrap">
     <header>
-      <h1>Hello, World! — Playtest Prototype (Rules v1)</h1>
-      <div class="status">Logic-first playtest: full ruleset implemented. UI minimal.</div>
-    </header>
-
-    <div style="margin-bottom:10px" class="controls">
-      Mode:
-      <select id="mode">
-        <option value="full" selected>Full (3 programs to win)</option>
-        <option value="quick">Quick (1 program to win)</option>
-      </select>
-      Players:
-      <select id="playerCount"><option>2</option><option selected>3</option><option>4</option></select>
-      <button id="resetBtn" class="secondary">New Game</button>
-      <button id="dump" class="secondary">Dump GameState (console)</button>
+      <h1>Hello, World! — Playtest Prototype</h1>
+      <div class="status">Quick test harness: draw/play/program completion. Not all rules implemented — tweak away.</div>
+    </header><div class="layout">
+  <aside class="panel">
+    <div class="toolbar">
+      <button id="drawMainBtn">Draw Main</button>
+      <button id="drawLangBtn" class="secondary">Draw Language</button>
+    </div>
+    <div>
+      <strong>Decks</strong>
+      <div class="deck-list" id="deckList"></div>
     </div>
 
-    <div class="layout">
-      <aside class="panel">
-        <div class="panel-header"><strong>Decks & Actions</strong><span class="small" id="actionState">Action: none</span></div>
+    <hr />
+    <div>
+      <strong>Players</strong>
+      <div class="players" id="playersList"></div>
+      <div style="margin-top:8px">Current player: <span id="curPlayerName"></span></div>
+      <div style="margin-top:8px" class="status">Completed Programs: <span id="completeCount">0</span></div>
+    </div>
+  </aside>
 
-        <div class="toolbar" style="margin-top:8px">
-          <button id="drawMainBtn">Draw Main</button>
-          <button id="drawLangBtn" class="secondary">Draw Language</button>
-          <button id="playSelectedBtn">Play Selected (one each type)</button>
-        </div>
-
-        <div style="margin-top:8px">
-          <strong>Decks</strong>
-          <div class="deck-list" id="deckList"></div>
-        </div>
-
-        <hr />
-
-        <div>
-          <strong>Players</strong>
-          <div class="players" id="playersList"></div>
-          <div style="margin-top:8px">Current player: <span id="curPlayerName"></span></div>
-          <div style="margin-top:6px" class="status">Completed Programs: <span id="completeCount">0</span></div>
-          <div style="margin-top:6px" class="status">Scores: <span id="scores">-</span></div>
-        </div>
-      </aside>
-
-      <main class="panel">
-        <div class="panel-header"><strong>Play Area</strong>
-          <div class="small">Select cards from your hand (click). Play enforces max 1 per type per turn.</div>
-        </div>
-
-        <div class="play-area" id="playArea" style="margin-top:8px">
-          <div><strong>Programs in progress (click to select)</strong></div>
-          <div id="programs"></div>
-
-          <div style="margin-top:10px">
-            <button id="declareBtn">Declare Finished (score selected program)</button>
-            <button id="endTurnBtn" class="secondary">End Turn</button>
-          </div>
-        </div>
-
-        <hr />
-
-        <div>
-          <strong>Your Hand (click to toggle selection)</strong>
-          <div class="hand card-grid" id="hand"></div>
-          <div style="margin-top:8px">
-            <button id="discardBtn" class="secondary">Discard Selected</button>
-          </div>
-        </div>
-
-      </main>
-
-      <aside class="panel right-col">
-        <div><strong>Event Log</strong></div>
-        <div class="log" id="log"></div>
-        <hr />
-        <div>
-          <strong>Game Controls</strong>
-          <div style="margin-top:8px">
-            <div class="small">Max hand size: 8. One action per turn. Bugs played on draw are forced and resolve immediately.</div>
-          </div>
-        </div>
-      </aside>
+  <main class="panel">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <strong>Play Area</strong>
+      <div class="status">Select a card in your hand to play it. Then click "Play Selected".</div>
     </div>
 
-    <footer>Prototype Rules v1 — after your tests I'll tighten edge-cases and add multiplayer.</footer>
-  </div>
+    <div class="play-area" id="playArea">
+      <div><strong>Programs in progress</strong></div>
+      <div id="programs"></div>
+    </div>
 
-<script>
-/*
- Full ruleset implementation (alpha)
- - Decks: each player has language deck (Functions/Libraries/Loops)
- - Main deck: Events, Bugs, IfElse, Bonuses, Variables
- - Start: each player draws 8
- - Each turn: choose one action (draw main, draw language, OR play)
- - Play action: you may play up to ONE card of each TYPE from your hand into one of your programs:
-    Types: Function, Variable, Library, IfElse, Bonus, Event, Bug
- - Declare Finished: validate program (must have >=1 Function, all required variables & libraries satisfied); score
- - Scoring: sum(variable values) * product(function multipliers) + sum(library bonuses) + sum(bonus values)
- - Nested functions: treated by multiplying all function multipliers (simple approximation)
- - Win: Quick=1 completed program, Full=3 completed programs
- - If a player is mid-build when someone wins, incomplete programs are discarded
- - Hand limit enforced at 8
- - Events & Bugs resolve immediately upon playing/drawing as required
-*/
+    <hr />
 
-function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+    <div>
+      <strong>Your Hand</strong>
+      <div class="hand" id="hand"></div>
+      <div style="margin-top:8px">
+        <button id="playCardBtn">Play Selected</button>
+        <button id="discardBtn" class="secondary">Discard Selected</button>
+        <button id="endTurnBtn" class="secondary">End Turn</button>
+      </div>
+    </div>
+  </main>
 
-// ---- Card pool (sample, expand later) ----
-const VARIABLES = [
+  <aside class="panel">
+    <div><strong>Event Log</strong></div>
+    <div class="log" id="log"></div>
+    <hr />
+    <div>
+      <strong>Controls</strong>
+      <div style="margin-top:8px">
+        <label>Players: <select id="playerCount"><option>2</option><option selected>3</option><option>4</option></select></label>
+        <button id="resetBtn" class="secondary">New Game</button>
+      </div>
+    </div>
+  </aside>
+</div>
+
+<footer>Prototype v2 — Programs now show requirements and live score preview.</footer>
+
+  </div><script>
+// Sample data
+const SAMPLE_VARIABLES = [
   {id:'int1',type:'Integer',value:1,label:'Integer 1'},
-  {id:'int2',type:'Integer',value:2,label:'Integer 2'},
-  {id:'int5',type:'Integer',value:5,label:'Integer 5'},
   {id:'int10',type:'Integer',value:10,label:'Integer 10'},
   {id:'boolT',type:'Boolean',value:1,label:'Boolean True'},
   {id:'boolF',type:'Boolean',value:0,label:'Boolean False'},
   {id:'strHello',type:'String',value:11,label:'"Hello World!" [11]'},
-  {id:'strURL',type:'String',value:22,label:'Raszyra.GitHub.io/Site [22]'},
   {id:'imgKitten',type:'Media',value:2,label:'kitten.jpg [2MB]'},
-  {id:'videoFail',type:'Media',value:3,label:'fail.mp4 [3MB]'},
-  {id:'classProj',type:'Class',value:9,label:'Project Class [9]'}
+  {id:'classProj',type:'Class',value:9,label:'Project Class [9]'},
+  {id:'libMath',type:'Library',value:5,label:'Math Library (+5)'}
 ];
 
-const FUNCTIONS = [
-  {id:'fn_calc', type:'Function', difficulty:'Easy', requires:[{type:'Integer'},{type:'Integer'}], mult:1.2, label:'Calculator'},
-  {id:'fn_playVideo', type:'Function', difficulty:'Medium', requires:[{type:'Media'}], mult:2, label:'playVideo'},
-  {id:'fn_newDB', type:'Function', difficulty:'Hard', requires:[{type:'Class'},{type:'String'}], mult:3, label:'newDatabase'},
-  {id:'fn_textAdventure', type:'Function', difficulty:'Extreme', requires:[{type:'Class'},{type:'Loop'},{type:'Loop'}], mult:5, label:'textBasedAdventure'}
+const SAMPLE_FUNCTIONS = [
+  {id:'fn_playVideo',type:'Function',difficulty:'Medium',requires:[{type:'Media'}],mult:2,label:'playVideo'},
+  {id:'fn_calculate',type:'Function',difficulty:'Easy',requires:[{type:'Integer'},{type:'Integer'}],mult:1,label:'Calculator'},
+  {id:'fn_newDB',type:'Function',difficulty:'Hard',requires:[{type:'Class'},{type:'String'}],mult:3,label:'newDatabase'}
 ];
 
-const LIBRARIES = [
-  {id:'lib_stdio', type:'Library', bonus:5, label:'IOStream'},
-  {id:'lib_vector', type:'Library', bonus:4, label:'Vector'},
-  {id:'lib_pygame', type:'Library', bonus:6, label:'pygame'},
-  {id:'lib_websocket', type:'Library', bonus:7, label:'WebSocket'}
+const SAMPLE_EVENTS = [
+  {id:'ev_syntax',type:'Event',label:'Syntax Error',effect:'skip_next'},
+  {id:'ev_party',type:'Event',label:'Office Party',effect:'points10'}
 ];
 
-const IFELSES = [
-  {id:'if_else', type:'IfElse', label:'If/Else Card'}
-];
+let state = {players:[],curPlayer:0,mainDeck:[],langDecks:[]};
 
-const BONUSES = [
-  {id:'bon_backup', type:'Bonus', value:10, label:'Backup Save +10'},
-  {id:'bon_ai', type:'Bonus', value:0, label:'AI Integration (draw +1 per turn)'},
-  {id:'bon_db', type:'Bonus', value:5, label:'Database Included +5'}
-];
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a}
 
-const EVENTS = [
-  {id:'ev_serverdown', type:'Event', label:'Servers Down', effect:{type:'servers_down',turns:1}},
-  {id:'ev_officeparty', type:'Event', label:'Office Party', effect:{type:'points',value:10}},
-  {id:'ev_install', type:'Event', label:'Install Wizard', effect:{type:'search_deck'}}
-];
-
-const BUGS = [
-  {id:'bug_segfault', type:'Bug', label:'Segmentation Fault', effect:{type:'segfault'}},
-  {id:'bug_memleak', type:'Bug', label:'Memory Leak', effect:{type:'memleak'}},
-  {id:'bug_syntax', type:'Bug', label:'Syntax Error', effect:{type:'skip_next'}}
-];
-
-// ---- state ----
-let state = {
-  players: [],
-  curPlayer: 0,
-  mainDeck: [],
-  langDecks: [],
-  mode: 'full',
-  actionTaken: false
-};
-
-// ---- utilities ----
-function clone(o){ return JSON.parse(JSON.stringify(o)); }
-function log(txt){ const l=document.getElementById('log'); const p=document.createElement('div'); p.innerText = (new Date()).toLocaleTimeString()+' — '+txt; l.prepend(p); console.log(txt); }
-function findCardById(id){
-  return [...VARIABLES, ...FUNCTIONS, ...LIBRARIES, ...IFELSES, ...BONUSES, ...EVENTS, ...BUGS].find(c=>c.id===id) || null;
-}
-
-// ---- build decks ----
-function buildDecks(playerCount,mode){
-  // main deck composition: variables x ?, functions x ?, events, bugs, bonuses, if/else
-  // For prototype we scale by mode: quick ~50, full ~100
-  const main = [];
-  // add multiple copies for variability
-  for(let i=0;i<6;i++) VARIABLES.forEach(v=> main.push(clone(v)));
-  for(let i=0;i<3;i++) FUNCTIONS.forEach(f=> main.push(clone(f)));
-  for(let i=0;i<2;i++) EVENTS.forEach(e=> main.push(clone(e)));
-  BUGS.forEach(b=> main.push(clone(b)));
-  BONUSES.forEach(b=> main.push(clone(b)));
-  IFELSES.forEach(i=> main.push(clone(i)));
-  // shuffle and trim
-  shuffle(main);
-  const desired = (mode==='quick')?50:100;
-  main.length = Math.min(desired, main.length);
-
-  // language decks: each player gets dedicated language deck (functions/libraries/loops)
-  const langDecks = [];
-  for(let p=0;p<playerCount;p++){
-    const d = [];
-    // give each a mix of functions and libraries
-    FUNCTIONS.forEach(f=> d.push(clone(f)));
-    LIBRARIES.forEach(l=> d.push(clone(l)));
-    // add a couple of ints
-    d.push(clone({id:'lang_int_5_'+p,type:'Integer',value:5,label:'Integer 5 (Lang)'}));
-    shuffle(d);
-    langDecks.push(d);
-  }
-
-  return {main, langDecks};
-}
-
-// ---- game flow ----
 function newGame(playerCount){
   state.players = [];
-  state.mode = document.getElementById('mode').value;
-  const pc = playerCount;
-  for(let p=0;p<pc;p++){
-    state.players.push({
-      id:p, name:'P'+(p+1),
-      hand:[], programs:[], completed:0, score:0,
-      status:{skipNext:false, serversDown:0}
-    });
-  }
-  const decks = buildDecks(pc, state.mode);
-  state.mainDeck = decks.main;
-  state.langDecks = decks.langDecks;
+  for(let p=0;p<playerCount;p++) state.players.push({id:p,name:'P'+(p+1),hand:[],programs:[],completed:0,score:0});
   state.curPlayer = 0;
-  state.actionTaken = false;
-
-  // initial deal: 8 cards each
-  for(let i=0;i<8;i++){
-    for(let p=0;p<pc;p++){
-      drawFromMain(p, false);
-    }
+  state.mainDeck = shuffle([...SAMPLE_EVENTS,...SAMPLE_VARIABLES,...SAMPLE_FUNCTIONS]);
+  state.langDecks = [];
+  for(let p=0;p<playerCount;p++){
+    state.langDecks.push(shuffle([
+      {id:'lang_fn_'+p,label:'Function_A_'+p,type:'Function',requires:[]},
+      {id:'lang_var_'+p,label:'Integer_5',type:'Integer',value:5}
+    ]));
   }
-
+  for(let i=0;i<5;i++) for(let p=0;p<playerCount;p++) drawFromMain(p);
   renderAll();
-  log('New game: '+pc+' players — Mode: '+state.mode);
+  log('New game started with '+playerCount+' players.');
 }
 
-// draw main (action)
-function drawFromMain(playerId, markAction=true){
-  if(markAction && state.curPlayer !== playerId) { log('Not your turn'); return null; }
-  const card = state.mainDeck.shift();
-  if(!card){ log('Main deck empty'); return null; }
-  // forced: if Bug drawn it must be played immediately on you
-  const pl = state.players[playerId];
-  if(card.type === 'Bug'){
-    log(pl.name+' drew a BUG and must resolve it: '+card.label);
-    resolveBug(playerId, card);
-    if(markAction) state.actionTaken = true;
-    renderAll();
-    return card;
-  }
-  if(pl.hand.length >= 8){
-    log(pl.name+"'s hand is full (8). Discarding drawn card: "+card.label);
-    // discard silently
-  } else {
-    pl.hand.push(card);
-  }
-  if(markAction) state.actionTaken = true;
-  log(state.players[playerId].name+' drew from main: '+card.label);
-  renderAll();
-  return card;
-}
+function drawFromMain(playerId){const card=state.mainDeck.shift();if(!card) return null;state.players[playerId].hand.push(card);return card;}
+function drawFromLang(playerId){const deck=state.langDecks[playerId];const card=deck.shift();if(card) state.players[playerId].hand.push(card);return card;}
 
-// draw language deck (action)
-function drawFromLang(playerId){
-  if(state.curPlayer !== playerId){ log('Not your turn'); return null; }
-  const deck = state.langDecks[playerId];
-  const card = deck.shift();
-  if(!card){ log('Language deck empty for player '+playerId); return null; }
-  const pl = state.players[playerId];
-  if(pl.hand.length >= 8){
-    log(pl.name+"'s hand is full (8). Discarding language card: "+card.label);
-  } else {
-    pl.hand.push(card);
-  }
-  state.actionTaken = true;
-  log(pl.name+' drew from language deck: '+card.label);
-  renderAll();
-  return card;
-}
-
-// resolve bug (simple effects)
-function resolveBug(playerId, bugCard){
-  const pl = state.players[playerId];
-  const eff = bugCard.effect || {};
-  if(eff.type === 'segfault'){
-    // remove one function from play (from programs) if any
-    let removed = false;
-    for(const prog of pl.programs){
-      const idx = prog.cards.findIndex(c=>c.type==='Function');
-      if(idx!==-1){ const removedCard = prog.cards.splice(idx,1)[0]; log(pl.name+' lost function due to Segmentation Fault: '+(removedCard.label||removedCard.id)); removed=true; break; }
-    }
-    if(!removed) log(pl.name+' had no function to remove for Segmentation Fault.');
-  } else if(eff.type === 'memleak'){
-    // return all variables in a random program to player's hand
-    if(pl.programs.length>0){
-      const prog = pl.programs[0];
-      const vars = prog.cards.filter(c=>['Integer','Boolean','String','Media','Class'].includes(c.type));
-      prog.cards = prog.cards.filter(c=>!['Integer','Boolean','String','Media','Class'].includes(c.type));
-      vars.forEach(v=>{
-        if(pl.hand.length < 8) pl.hand.push(v);
-      });
-      log(pl.name+' had variables returned to hand by Memory Leak ('+vars.length+' variables).');
-    } else log(pl.name+' had no programs for Memory Leak.');
-  } else if(eff.type === 'skip_next'){
-    pl.status.skipNext = true;
-    log(pl.name+' will skip their next turn due to Syntax Error.');
-  } else {
-    log('Bug effect not implemented: '+JSON.stringify(eff));
-  }
-}
-
-// resolve event (when played)
-function resolveEvent(playerId, eventCard){
-  const pl = state.players[playerId];
-  const eff = eventCard.effect || {};
-  if(eff.type === 'servers_down'){
-    pl.status.serversDown = eff.turns || 1;
-    log('Servers Down for '+pl.name+' for '+pl.status.serversDown+' turn(s).');
-  } else if(eff.type === 'points'){
-    const v = eff.value||0;
-    pl.score = (pl.score||0) + v;
-    log(pl.name+' gained '+v+' points from event '+eventCard.label);
-  } else if(eff.type === 'search_deck'){
-    log(pl.name+' may search their language deck for a required card (not automated here).');
-  } else {
-    log('Event effect unhandled: '+JSON.stringify(eff));
-  }
-}
-
-// ---- playing cards (action) ----
-// selection model: clicking hand toggles selected index (store selected indices)
-let selectedIndices = new Set();
-let selectedProgramIndex = null;
-
-function toggleSelectHand(idx){ 
-  const pl = state.players[state.curPlayer];
-  if(idx < 0 || idx >= pl.hand.length) return;
-  if(selectedIndices.has(idx)) selectedIndices.delete(idx); else selectedIndices.add(idx);
-  renderAll();
-}
-
-function selectProgram(pi){
-  const pl = state.players[state.curPlayer];
-  if(pi < 0 || pi >= pl.programs.length) return;
-  selectedProgramIndex = pi;
-  renderAll();
-}
-
-// enforce play rules: at most one of each type played into the target program in this action
-function playSelectedAction(){
-  if(state.actionTaken){ log('Action already taken this turn. End your turn.'); return; }
-  const pl = state.players[state.curPlayer];
-  if(selectedIndices.size === 0){ log('No cards selected to play.'); return; }
-
-  // group selected cards by type
-  const selected = Array.from(selectedIndices).sort((a,b)=>a-b).map(i=>pl.hand[i]);
-  const byType = {};
-  for(const c of selected){
-    byType[c.type] = byType[c.type] || [];
-    byType[c.type].push(c);
-  }
-  // enforce only one card per type
-  for(const t in byType){
-    if(byType[t].length > 1){
-      log('You selected more than one card of type '+t+'. Only one will be played; extras remain in hand.');
-      // keep only first per type
-      byType[t] = [byType[t][0]];
-    }
-  }
-
-  // choose program to add into (selectedProgramIndex or create new)
-  if(selectedProgramIndex === null){
-    // create new program
-    pl.programs.push({name:'Prog'+(pl.programs.length+1), cards:[]});
-    selectedProgramIndex = pl.programs.length-1;
-  }
-  const prog = pl.programs[selectedProgramIndex];
-
-  // place cards into program and remove from hand (only actual played ones)
-  const played = [];
-  for(const t of Object.keys(byType)){
-    const card = byType[t][0];
-    // special: if Event/Bug must resolve immediately upon play
-    if(card.type === 'Event'){
-      // remove from hand
-      const idx = pl.hand.findIndex(h=>h===card);
-      if(idx!==-1) pl.hand.splice(idx,1);
-      log(pl.name+' played Event: '+card.label);
-      resolveEvent(state.curPlayer, card);
-      played.push(card);
-      continue;
-    }
-    if(card.type === 'Bug'){
-      const idx = pl.hand.findIndex(h=>h===card);
-      if(idx!==-1) pl.hand.splice(idx,1);
-      log(pl.name+' played Bug: '+card.label);
-      resolveBug(state.curPlayer, card);
-      played.push(card);
-      continue;
-    }
-    // normal placement
-    const idx = pl.hand.findIndex(h=>h===card);
-    if(idx!==-1){
-      prog.cards.push(card);
-      pl.hand.splice(idx,1);
-      played.push(card);
-      log(pl.name+' placed '+card.label+' into '+prog.name);
-    }
-  }
-
-  // action is consumed
-  state.actionTaken = true;
-  // clear selections
-  selectedIndices.clear();
-  renderAll();
-}
-
-// ---- scoring & validation ----
-function validateProgram(program){
-  // program must contain at least one Function and required variables/libraries for each function
-  const functions = program.cards.filter(c=>c.type==='Function');
-  if(functions.length === 0) return {ok:false,reason:'No Function card present.'};
-
-  // gather variable types present and library ids present
-  const vars = program.cards.filter(c=>['Integer','Boolean','String','Media','Class'].includes(c.type));
-  const varTypes = vars.map(v=>v.type);
-  // simple check: for each function, ensure its requires are satisfied by program cards
-  for(const fn of functions){
-    if(fn.requires && fn.requires.length>0){
-      for(const req of fn.requires){
-        // 'Loop' requirement: treat IfElse or explicit Loop library as satisfying? For prototype, check presence of any Loop-type card or IfElse (coarse)
-        if(req.type === 'Loop'){
-          const hasLoop = program.cards.some(c=>c.id && c.id.toLowerCase().includes('loop')) || program.cards.some(c=>c.type==='IfElse');
-          if(!hasLoop) return {ok:false,reason:'Missing Loop requirement for function '+(fn.label||fn.id)};
-        } else {
-          // look for a variable of matching type, or a library that enables it
-          const hasVar = program.cards.some(c=>c.type === req.type);
-          if(!hasVar){
-            // allow Class to satisfy Class member requirements only if req.type === 'Class'
-            return {ok:false,reason:'Missing required '+req.type+' for function '+(fn.label||fn.id)};
-          }
-        }
-      }
-    }
-  }
-  return {ok:true};
-}
-
-function scoreProgram(program){
-  // sum variable values
-  const vars = program.cards.filter(c=>['Integer','Boolean','String','Media','Class'].includes(c.type));
-  const varSum = vars.reduce((s,c)=>s + (Number(c.value)||0),0);
-  // product of function multipliers
-  const fns = program.cards.filter(c=>c.type==='Function');
-  const fnMult = fns.reduce((p,c)=>p * (Number(c.mult)||1),1);
-  // sum library bonuses
-  const libs = program.cards.filter(c=>c.type==='Library');
-  const libBonus = libs.reduce((s,c)=>s + (Number(c.bonus)||0),0);
-  // sum bonus cards
-  const bonuses = program.cards.filter(c=>c.type==='Bonus');
-  const bon = bonuses.reduce((s,c)=>s + (Number(c.value)||0),0);
-  // If/Else chain bonus: n If/Else cards add (n+1) per spec? We'll give small additive
-  const ifs = program.cards.filter(c=>c.type==='IfElse').length;
-  const ifBonus = ifs > 0 ? (ifs + 1) : 0;
-
-  const base = varSum * fnMult;
-  const total = Math.round((base + libBonus + bon + ifBonus) * 100) / 100;
-  return {total, breakdown:{varSum,fnMult,libBonus,bon,ifBonus,base}};
-}
-
-// declare finished (action does NOT count as your action for the turn; players decide when to finish)
-function declareFinished(programIndex){
-  const pl = state.players[state.curPlayer];
-  if(programIndex === null || programIndex === undefined){ log('No program selected to declare.'); return; }
-  if(programIndex < 0 || programIndex >= pl.programs.length) return;
-  const prog = pl.programs[programIndex];
-  const v = validateProgram(prog);
-  if(!v.ok){
-    log('Program invalid: '+v.reason);
-    return;
-  }
-  const scoreRes = scoreProgram(prog);
-  pl.score = (pl.score||0) + scoreRes.total;
-  pl.completed = (pl.completed||0) + 1;
-  log(pl.name+' finished '+prog.name+' for '+scoreRes.total+' points. (vars:'+scoreRes.breakdown.varSum+' × fnMult:'+scoreRes.breakdown.fnMult+')');
-  // remove program
-  pl.programs.splice(programIndex,1);
-  selectedProgramIndex = null;
-  // check win
-  const goal = (state.mode === 'quick') ? 1 : 3;
-  if(pl.completed >= goal){
-    log(pl.name+' has completed '+pl.completed+' programs and WINS!');
-    // clear incomplete programs for all players
-    state.players.forEach(pp=> pp.programs = []);
-    renderAll();
-    return;
-  }
-  renderAll();
-}
-
-// end turn: reset action, advance
-function endTurn(){
-  const cur = state.players[state.curPlayer];
-  // check skipNext
-  if(cur.status.skipNext){
-    log(cur.name+' skips this turn (skip_next).');
-    cur.status.skipNext = false;
-    state.curPlayer = (state.curPlayer+1) % state.players.length;
-    state.actionTaken = false;
-    renderAll();
-    return;
-  }
-  // handle serversDown countdown
-  if(cur.status.serversDown && cur.status.serversDown > 0){
-    cur.status.serversDown -= 1;
-    log(cur.name+' has Servers Down; remaining turns: '+cur.status.serversDown);
-  }
-  // pass turn
-  state.curPlayer = (state.curPlayer+1) % state.players.length;
-  state.actionTaken = false;
-  selectedIndices.clear();
-  selectedProgramIndex = null;
-  renderAll();
-  log('Turn passed to '+state.players[state.curPlayer].name);
-}
-
-// ---- rendering ----
 function renderAll(){
-  // decks summary
-  const dl = document.getElementById('deckList'); dl.innerHTML = '';
-  const mainEl = document.createElement('div'); mainEl.className='deck'; mainEl.innerText = 'Main Deck: '+state.mainDeck.length+' cards'; dl.appendChild(mainEl);
-  state.langDecks.forEach((d,i)=>{
-    const el = document.createElement('div'); el.className='deck'; el.innerText = 'Lang '+(i+1)+': '+d.length; dl.appendChild(el);
+  const deckList=document.getElementById('deckList');deckList.innerHTML='';
+  const mainSummary=document.createElement('div');mainSummary.className='deck';mainSummary.innerText='Main Deck: '+state.mainDeck.length+' cards';deckList.appendChild(mainSummary);
+  state.langDecks.forEach((d,i)=>{const el=document.createElement('div');el.className='deck';el.innerText='Lang '+(i+1)+': '+d.length;deckList.appendChild(el)});
+
+  const playersList=document.getElementById('playersList');playersList.innerHTML='';
+  state.players.forEach((pl,i)=>{const el=document.createElement('div');el.className='player'+(i===state.curPlayer?' active':'');el.innerText=pl.name;el.onclick=()=>{state.curPlayer=i;renderAll()};playersList.appendChild(el)});
+  document.getElementById('curPlayerName').innerText=state.players[state.curPlayer].name;
+  document.getElementById('completeCount').innerText=state.players.map(p=>p.completed).join(', ');
+
+  const hand=document.getElementById('hand');hand.innerHTML='';
+  state.players[state.curPlayer].hand.forEach((c,idx)=>{
+    const el=document.createElement('div');el.className='card small';el.innerText=(c.label||c.id)+"\n("+c.type+")";el.onclick=()=>selectCard(idx);hand.appendChild(el);
   });
 
-  // players
-  const playersEl = document.getElementById('playersList'); playersEl.innerHTML = '';
-  state.players.forEach((p,i)=>{
-    const el = document.createElement('div'); el.className = 'player'+(i===state.curPlayer ? ' active' : '');
-    el.innerText = p.name + ' ('+(p.score||0)+' pts)';
-    el.onclick = ()=>{ state.curPlayer = i; selectedIndices.clear(); selectedProgramIndex = null; renderAll(); };
-    playersEl.appendChild(el);
-  });
-  document.getElementById('curPlayerName').innerText = state.players[state.curPlayer].name;
-  document.getElementById('completeCount').innerText = state.players.map(p=>p.completed||0).join(', ');
-  document.getElementById('scores').innerText = state.players.map(p=> (p.name+':'+(p.score||0))).join(' | ');
-  document.getElementById('actionState').innerText = state.actionTaken ? 'Action used' : 'Action available';
+  const programs=document.getElementById('programs');programs.innerHTML='';
+  state.players[state.curPlayer].programs.forEach((prog,pi)=>{
+    const slot=document.createElement('div');slot.className='program-slot';
 
-  // hand
-  const handEl = document.getElementById('hand'); handEl.innerHTML = '';
-  const pl = state.players[state.curPlayer];
-  pl.hand.forEach((c,idx)=>{
-    const d = document.createElement('div'); d.className='card small';
-    if(selectedIndices.has(idx)) d.classList.add('selected');
-    d.innerText = (c.label||c.id) + '\n(' + c.type + (c.value ? ' : '+c.value : '') + (c.bonus ? ' : lib+'+c.bonus : '') + ')';
-    d.onclick = ()=>{ toggleSelectHand(idx); };
-    handEl.appendChild(d);
-  });
+    // requirements + score preview
+    const functions=prog.cards.filter(c=>c.type==='Function');
+    let reqsText='';
+    let varSum=0; let mult=1; let libBonus=0;
 
-  // programs
-  const progsEl = document.getElementById('programs'); progsEl.innerHTML = '';
-  pl.programs.forEach((prog,pi)=>{
-    const slot = document.createElement('div'); slot.className='program-slot';
-    if(selectedProgramIndex === pi) slot.classList.add('selected');
-    const html = '<strong>'+(prog.name||('Program #'+(pi+1)))+'</strong> ['+prog.cards.length+' cards] <button data-p="'+pi+'">Select</button><div style="font-size:12px;color:var(--muted)">'+prog.cards.map(c=> (c.label||c.id)+' ('+c.type+')').join(' | ')+'</div>';
-    slot.innerHTML = html;
-    slot.querySelector('button').onclick = ()=> { selectProgram(pi); };
-    progsEl.appendChild(slot);
-  });
+    const vars=prog.cards.filter(c=>['Integer','Boolean','String','Media','Class'].includes(c.type));
+    varSum=vars.reduce((s,c)=>s+(c.value||0),0);
 
-  // log remains unchanged
+    prog.cards.filter(c=>c.type==='Library').forEach(lib=>libBonus+=(lib.value||0));
+
+    functions.forEach(fn=>{
+      if(fn.mult) mult*=fn.mult;
+      if(fn.requires&&fn.requires.length){
+        fn.requires.forEach(req=>{
+          const satisfied=prog.cards.some(c=>c.type===req.type);
+          reqsText+=`<div style="font-size:12px;color:${satisfied?'#4ade80':'#f87171'}">${satisfied?'✔':'✘'} Needs ${req.type}</div>`;
+        });
+      }
+    });
+
+    const projectedScore=(varSum*mult)+libBonus;
+
+    slot.innerHTML=`<strong>${prog.name||('Program #'+(pi+1))}</strong><br/>
+      ${prog.cards.map(x=>x.label||x.id).join(' | ')}
+      <div style="margin-top:4px">${reqsText}</div>
+      <div style="font-size:12px;color:#94a3b8">Variables total: ${varSum}, Multiplier: x${mult}, Library bonus: +${libBonus}<br/>Projected score: ${projectedScore}</div>`;
+    programs.appendChild(slot);
+  });
 }
 
-// ---- UI hooks ----
-document.getElementById('resetBtn').onclick = ()=> {
-  const pc = parseInt(document.getElementById('playerCount').value,10);
-  newGame(pc);
-};
-document.getElementById('drawMainBtn').onclick = ()=> {
-  if(state.actionTaken){ log('You have already taken an action this turn.'); return; }
-  if(state.players[state.curPlayer].status.serversDown && state.players[state.curPlayer].status.serversDown > 0){
-    log('Cannot draw: Servers Down for you this turn.');
-    return;
-  }
-  drawFromMain(state.curPlayer, true);
-};
-document.getElementById('drawLangBtn').onclick = ()=> {
-  if(state.actionTaken){ log('You have already taken an action this turn.'); return; }
-  drawFromLang(state.curPlayer);
-};
-document.getElementById('playSelectedBtn').onclick = ()=> {
-  if(state.actionTaken){ log('You have already taken an action this turn.'); return; }
-  playSelectedAction();
-};
-document.getElementById('discardBtn').onclick = ()=> {
-  const pl = state.players[state.curPlayer];
-  if(selectedIndices.size === 0){ log('Select a card to discard.'); return; }
-  const indices = Array.from(selectedIndices).sort((a,b)=>b-a); // remove from highest to lowest
-  indices.forEach(i=> {
-    if(i>=0 && i < pl.hand.length) {
-      const c = pl.hand.splice(i,1)[0];
-      log(pl.name+' discarded '+c.label);
-    }
-  });
-  selectedIndices.clear();
-  renderAll();
-};
-document.getElementById('declareBtn').onclick = ()=> {
-  if(selectedProgramIndex === null){ log('Select a program to declare finished.'); return; }
-  declareFinished(selectedProgramIndex);
-};
-document.getElementById('endTurnBtn').onclick = ()=> {
-  endTurn();
-};
-document.getElementById('dump').onclick = ()=> { console.log(state); alert('Game state dumped to console.'); };
+let selectedCardIndex=null;
+function selectCard(i){selectedCardIndex=i;log('Selected card index '+i);highlightSelection();}
+function highlightSelection(){const handEls=document.getElementById('hand').children;for(let k=0;k<handEls.length;k++){handEls[k].style.outline=(k===selectedCardIndex)?'2px solid var(--accent)':''}}
 
-// init
+function playSelected(){if(selectedCardIndex===null)return alert('Select a card first');const player=state.players[state.curPlayer];const card=player.hand.splice(selectedCardIndex,1)[0];selectedCardIndex=null;if(player.programs.length===0)player.programs.push({name:'Prog'+(player.programs.length+1),cards:[card]});else player.programs[0].cards.push(card);log(player.name+' played '+(card.label||card.id));checkProgramCompletion(state.curPlayer,0);renderAll();}
+
+function discardSelected(){if(selectedCardIndex===null)return alert('Select a card to discard');const player=state.players[state.curPlayer];const card=player.hand.splice(selectedCardIndex,1)[0];selectedCardIndex=null;log(player.name+' discarded '+(card.label||card.id));renderAll();}
+
+function checkProgramCompletion(playerId,progIndex){
+  const player=state.players[playerId];const prog=player.programs[progIndex];
+  const hasFn=prog.cards.some(c=>c.type==='Function');
+  const hasReqs=prog.cards.every(c=>c.type!=='Function'||!(c.requires||[]).some(req=>!prog.cards.some(cc=>cc.type===req.type)));
+  if(hasFn&&hasReqs){
+    const vars=prog.cards.filter(c=>['Integer','Boolean','String','Media','Class'].includes(c.type));
+    const varSum=vars.reduce((s,c)=>s+(c.value||0),0);
+    let mult=1; prog.cards.filter(c=>c.type==='Function').forEach(fn=>mult*=fn.mult||1);
+    let libBonus=0; prog.cards.filter(c=>c.type==='Library').forEach(lib=>libBonus+=(lib.value||0));
+    const score=(varSum*mult)+libBonus;
+    player.completed++;player.score=(player.score||0)+score;player.programs.splice(progIndex,1);
+    log(player.name+' completed a program for '+score+' points! Total score: '+player.score);
+    if(player.completed>=3) log(player.name+' has completed 3 programs and wins!');
+  }
+}
+
+function endTurn(){state.curPlayer=(state.curPlayer+1)%state.players.length;selectedCardIndex=null;renderAll();log('Turn passed to '+state.players[state.curPlayer].name);}
+
+function log(txt){const l=document.getElementById('log');const p=document.createElement('div');p.innerText=(new Date()).toLocaleTimeString()+' — '+txt;l.prepend(p);}
+
+document.getElementById('drawMainBtn').onclick=()=>{const c=drawFromMain(state.curPlayer);if(c)log(state.players[state.curPlayer].name+' drew from main: '+(c.label||c.id));renderAll();};
+document.getElementById('drawLangBtn').onclick=()=>{const c=drawFromLang(state.curPlayer);if(c)log(state.players[state.curPlayer].name+' drew from their language deck: '+(c.label||c.id));renderAll();};
+document.getElementById('playCardBtn').onclick=playSelected;
+document.getElementById('discardBtn').onclick=discardSelected;
+document.getElementById('endTurnBtn').onclick=endTurn;
+document.getElementById('resetBtn').onclick=()=>{const pc=parseInt(document.getElementById('playerCount').value,10);newGame(pc);};
+
 newGame(parseInt(document.getElementById('playerCount').value,10));
-</script>
-</body>
+</script></body>
 </html>
