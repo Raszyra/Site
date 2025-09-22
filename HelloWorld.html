@@ -118,7 +118,22 @@
         <div>
           <strong>Game Controls</strong>
           <div style="margin-top:8px">
-            <div class="small">Max hand size: 8. One action per turn. Bugs played on draw are forced and resolve immediately.</div>
+            
+            <div class="small">Full ruleset implementation (alpha)
+  <br/> - Decks: each player has language deck (Functions/Libraries/Loops)
+ <br/> - Main deck: Events, Bugs, IfElse, Bonuses, Variables
+ <br/> - Start: each player draws 8
+ <br/> - Each turn: choose one action (draw main, draw language, OR play)
+  <br/> - Play action: you may play up to ONE card of each TYPE from your hand into one of your programs:
+    Types: Function, Variable, Library, IfElse, Bonus, Event, Bug
+  <br/> - Declare Finished: validate program (must have >=1 Function, all required variables & libraries satisfied); score
+ <br/> - Scoring: sum(variable values) * product(function multipliers) + sum(library bonuses) + sum(bonus values)
+ <br/> - Nested functions: treated by multiplying all function multipliers (simple approximation)
+ <br/> - Win: Quick=1 completed program, Full=3 completed programs
+ <br/> - If a player is mid-build when someone wins, incomplete programs are discarded
+ <br/> - Hand limit enforced at 8
+ <br/> - Events & Bugs resolve immediately upon playing/drawing as required
+*/</div>
           </div>
         </div>
       </aside>
