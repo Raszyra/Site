@@ -6,8 +6,8 @@
 <style>
 body { font-family: Arial; padding: 20px; background: #f0f0f0; }
 #game { display: flex; flex-wrap: wrap; gap: 20px; }
-.deck, .player-area, .playarea { border: 1px solid #ccc; padding: 10px; border-radius: 8px; background: #fff; min-width: 220px; }
-.card { margin: 5px; padding: 5px; border-radius: 5px; cursor: pointer; }
+.deck, .player-area, .playarea, .ruleset, .cardinfo, .setup { border: 1px solid #ccc; padding: 10px; border-radius: 8px; background: #fff; min-width: 220px; }
+.card { margin: 5px; padding: 5px; border-radius: 5px; cursor: pointer; display:inline-block; }
 .Function { background: #f88; }
 .Variable { background: #88f; }
 .Loop { background: #f90; }
@@ -15,65 +15,101 @@ body { font-family: Arial; padding: 20px; background: #f0f0f0; }
 .Bonus { background: #ff8; }
 .Bug { background: #333; color: #fff; }
 .Event { background: #0ff; }
+.IfElse { background: #a0a; color: #fff; }
 </style>
 </head>
 <body>
-<h1>Hello, World! Full Game Flow Prototype</h1>
+<h1>Hello, World! Full Game</h1>
 
-<div id="game">
+<div class="setup">
+<h3>New Game</h3>
+Players: <input type="number" id="numPlayers" min="3" value="3"><br>
+Game Size: <select id="gameSize">
+  <option value="quick">Quick Game</option>
+  <option value="full">Full Game</option>
+</select><br>
+<button id="newGameBtn">Start Game</button>
+</div>
+
+<div id="game" style="display:none;">
   <div class="deck">
     <h3>Main Deck</h3>
-    <button id="drawBtn">Draw Card</button>
+    <button id="drawMainBtn">Draw from Main Deck</button>
     <div id="deckCount"></div>
   </div>
+
   <div id="players"></div>
+
   <div class="playarea">
     <h3>Program Area</h3>
     <div id="programArea"></div>
     <button id="completeProgramBtn">Complete Program</button>
+    <button id="passBtn">Pass Turn</button>
+  </div>
+
+  <div class="ruleset">
+    <h3>Ruleset</h3>
+    <p>
+      - Draw one card from Main or Language Deck per turn.<br>
+      - Play one card of each type per turn.<br>
+      - Complete programs with at least one Function.<br>
+      - Score Variables + Bonuses.<br>
+      - First to complete 1 program (Quick) or 3 programs (Full) wins.<br>
+      - Hand limit: 8 cards.<br>
+    </p>
+  </div>
+
+  <div class="cardinfo">
+    <h3>Card Info</h3>
+    <div id="cardInfoText">Hover or click a card to see details.</div>
   </div>
 </div>
 
 <script>
-// --- Game Settings ---
-const NUM_PLAYERS = 3;
+// --- Game Variables ---
+let NUM_PLAYERS = 3;
+let PROGRAMS_TO_WIN = 3;
 const MAX_HAND = 8;
-const PROGRAMS_TO_WIN = 3; // full game
 let currentPlayer = 0;
+let mainDeck = [];
+let players = [];
 
-// --- Players ---
-const players = [];
-for (let i=0;i<NUM_PLAYERS;i++){
-  players.push({name:`Player ${i+1}`, hand:[], programs:[], score:0, program:[]});
-}
+// --- Card Creation ---
+function createCard(type,name,value=0,desc=""){ return {type,name,value,desc}; }
 
-// --- Cards ---
-const mainDeck = [];
-const discardPile = [];
+const allCards = [];
+// Variables
+for(let i=1;i<=12;i++) allCards.push(createCard('Variable',`Integer ${i}`,i,`Integer variable ${i}`));
+for(let i=1;i<=6;i++) allCards.push(createCard('Variable',`Boolean ${i}`,1,'Boolean variable'));
+for(let i=1;i<=5;i++) allCards.push(createCard('Variable',`String ${i}`,i*2,'String variable'));
+for(let i=1;i<=5;i++) allCards.push(createCard('Variable',`Char[] ${i}`,i*2,'Char array'));
+for(let i=1;i<=9;i++) allCards.push(createCard('Variable',`Media ${i}`,i*2,'Audio/Video/Image'));
+for(let i=1;i<=5;i++) allCards.push(createCard('Variable',`Class ${i}`,i*2,'Class variable'));
+for(let i=1;i<=8;i++) allCards.push(createCard('Variable',`Button/Key ${i}`,4,'Input variable'));
 
-function addCard(type, name, value=0){
-  mainDeck.push({type,name,value});
-}
+// Functions
+['Assign','Evaluate','Add','Subtract','Multiply','Divide','Calculator','CoinFlip','Print','Concatenate','Conjoin'].forEach(f=>allCards.push(createCard('Function',f,0,`Function ${f}`)));
 
-// Example deck (simplified for prototype)
-for (let i=1;i<=12;i++) addCard('Variable', `Integer ${i}`, i);
-for (let i=1;i<=5;i++) addCard('Variable', `String ${i}`, i*2);
-addCard('Function','Assign');
-addCard('Function','Evaluate');
-addCard('Loop','For');
-addCard('Library','IOstream');
-addCard('Bonus','Backup Save',10);
-addCard('Bug','Segmentation Fault');
-addCard('Event','Servers Down');
+// Loops
+['Do','For','While'].forEach(l=>allCards.push(createCard('Loop',l,0,`Loop type ${l}`)));
 
-// Shuffle
-function shuffle(deck){
-  for (let i=deck.length-1;i>0;i--){
-    const j=Math.floor(Math.random()*(i+1));
-    [deck[i],deck[j]]=[deck[j],deck[i]];
-  }
-}
-shuffle(mainDeck);
+// Libraries
+['IOstream','Vector','Winmm','SDL2','GDIplus','Ctime','pygame','numpy','socket','math.js','WebSocket'].forEach(l=>allCards.push(createCard('Library',l,0,`Library ${l}`)));
+
+// Bonuses
+['Controller Support','Bluetooth Compatible','Database Included','Backup Save','Port Forwarding','Remote Server','Borrowed Code','AI Integration','Web Client','Memory Optimization','Language Integration','SQL-Friendly'].forEach(b=>allCards.push(createCard('Bonus',b,5,`Bonus ${b}`)));
+
+// Bugs
+['Segmentation Fault','Memory Leak','Syntax Error','Corrupted File'].forEach(b=>allCards.push(createCard('Bug',b,0,`Bug ${b}`)));
+
+// Events
+['Servers Down','Office Party','New Equipment','Sticky Keys','Install Wizard','Reboot','System Overload','Stack Overflow','Behind Schedule','Overachiever','Promotion','New Management','Trash Day','Reorganization','Blind Debugging'].forEach(e=>allCards.push(createCard('Event',e,0,`Event ${e}`)));
+
+// If/Else
+for(let i=1;i<=10;i++) allCards.push(createCard('IfElse',`IfElse ${i}`,i,`If/Else chain card ${i}`));
+
+// --- Shuffle ---
+function shuffle(deck){ for(let i=deck.length-1;i>0;i--){ let j=Math.floor(Math.random()*(i+1)); [deck[i],deck[j]]=[deck[j],deck[i]]; }}
 
 // --- Rendering ---
 function renderPlayers(){
@@ -83,8 +119,9 @@ function renderPlayers(){
     const div=document.createElement('div');
     div.className='player-area';
     div.innerHTML=`<h3>${p.name} ${idx===currentPlayer?'(Current)':''}</h3>
-    <strong>Score:</strong> ${p.score}<br>
-    <strong>Hand:</strong><div id="hand-${idx}"></div>`;
+      <strong>Score:</strong> ${p.score}<br>
+      <strong>Hand:</strong><div id="hand-${idx}"></div>
+      <strong>Language Deck:</strong> <div id="langDeckCount-${idx}">${p.langDeck.length} cards</div>`;
     container.appendChild(div);
     renderHand(idx);
   });
@@ -94,39 +131,37 @@ function renderHand(idx){
   const handDiv=document.getElementById(`hand-${idx}`);
   handDiv.innerHTML='';
   players[idx].hand.forEach((c,i)=>{
-    const cardDiv=document.createElement('div');
-    cardDiv.className=`card ${c.type}`;
-    cardDiv.textContent=c.name;
-    if(idx===currentPlayer) cardDiv.onclick=()=>playCard(i);
-    handDiv.appendChild(cardDiv);
-  });
-}
-
-function renderDeck(){
-  document.getElementById('deckCount').textContent=`Cards left: ${mainDeck.length}`;
-}
-
-function renderProgram(){
-  const div=document.getElementById('programArea');
-  div.innerHTML='';
-  const prog=players[currentPlayer].program;
-  prog.forEach(c=>{
     const cDiv=document.createElement('div');
     cDiv.className=`card ${c.type}`;
     cDiv.textContent=c.name;
-    div.appendChild(cDiv);
+    cDiv.onmouseover=()=>showCardInfo(c);
+    if(idx===currentPlayer) cDiv.onclick=()=>playCard(i);
+    handDiv.appendChild(cDiv);
   });
 }
 
-// --- Game Actions ---
-document.getElementById('drawBtn').onclick=()=>{
+function renderDeck(){ document.getElementById('deckCount').textContent=`Cards left: ${mainDeck.length}`; }
+function renderProgram(){ const div=document.getElementById('programArea'); div.innerHTML=''; players[currentPlayer].program.forEach(c=>{ const cDiv=document.createElement('div'); cDiv.className=`card ${c.type}`; cDiv.textContent=c.name; cDiv.onmouseover=()=>showCardInfo(c); div.appendChild(cDiv); }); }
+function showCardInfo(card){ document.getElementById('cardInfoText').textContent=`${card.name} (${card.type}): ${card.desc} Value: ${card.value}`;}
+
+// --- Actions ---
+document.getElementById('drawMainBtn').onclick=()=>{
   const p=players[currentPlayer];
   if(p.hand.length>=MAX_HAND) return alert('Hand full!');
-  if(mainDeck.length===0) return alert('Deck empty!');
+  if(mainDeck.length===0) return alert('Main deck empty!');
   p.hand.push(mainDeck.pop());
   renderHand(currentPlayer);
   renderDeck();
 };
+
+document.getElementById('drawLangBtn')?.addEventListener('click',()=>{
+  const p=players[currentPlayer];
+  if(p.hand.length>=MAX_HAND) return alert('Hand full!');
+  if(p.langDeck.length===0) return alert('Language deck empty!');
+  p.hand.push(p.langDeck.pop());
+  renderHand(currentPlayer);
+  renderPlayers();
+});
 
 function playCard(idx){
   const p=players[currentPlayer];
@@ -142,27 +177,39 @@ document.getElementById('completeProgramBtn').onclick=()=>{
   let score=p.program.filter(c=>c.type==='Variable').reduce((s,c)=>s+c.value,0);
   score+=p.program.filter(c=>c.type==='Bonus').reduce((s,c)=>s+c.value||0,0);
   p.score+=score;
-  p.program=[];
   p.programs.push(score);
+  p.program=[];
   alert(`${p.name} completed a program! Score: ${score}, Total Score: ${p.score}`);
-  if(p.programs.length>=PROGRAMS_TO_WIN){
-    alert(`${p.name} wins the game!`);
-    return;
-  }
+  if(p.programs.length>=PROGRAMS_TO_WIN){ alert(`${p.name} wins the game!`); document.getElementById('game').style.display='none'; return;}
   nextPlayer();
 };
 
-// --- Turn Rotation ---
-function nextPlayer(){
-  currentPlayer=(currentPlayer+1)%NUM_PLAYERS;
-  renderPlayers();
-  renderProgram();
-}
+document.getElementById('passBtn').onclick=()=>{ nextPlayer(); };
 
-// --- Initial Render ---
-renderPlayers();
-renderDeck();
-renderProgram();
+function nextPlayer(){ currentPlayer=(currentPlayer+1)%players.length; renderPlayers(); renderProgram(); }
+
+// --- New Game ---
+document.getElementById('newGameBtn').onclick=()=>{
+  NUM_PLAYERS=parseInt(document.getElementById('numPlayers').value);
+  const size=document.getElementById('gameSize').value;
+  PROGRAMS_TO_WIN=size==='quick'?1:3;
+  currentPlayer=0;
+  players.length=0;
+  mainDeck=[];
+  for(let i=0;i<NUM_PLAYERS;i++){
+    // create language deck for each player
+    const langDeck=allCards.filter(c=>['Function','Loop','Library'].includes(c.type));
+    shuffle(langDeck);
+    players.push({name:`Player ${i+1}`, hand:[], programs:[], score:0, program:[], langDeck:langDeck});
+  }
+  // main deck contains Variables, Bonuses, Bugs, Events, If/Else
+  mainDeck=allCards.filter(c=>['Variable','Bonus','Bug','Event','IfElse'].includes(c.type));
+  shuffle(mainDeck);
+  document.getElementById('game').style.display='flex';
+  renderPlayers();
+  renderDeck();
+  renderProgram();
+};
 </script>
 </body>
 </html>
