@@ -39,97 +39,7 @@
     .breakdown{font-size:12px;color:#94a3b8;margin-top:6px}
   </style>
 </head>
-<body>
-  <div class="wrap">
-    <header>
-      <h1>Hell0, W{}rld! — Playtest Prototype (Rules v1.2)</h1>
-      <div class="status">Playtest: draw → (optional) play 1 Function + 1 Variable — Bugs/Events implemented.</div>
-    </header>
 
-    <div style="margin-bottom:10px" class="controls">
-      Mode:
-      <select id="mode">
-        <option value="full" selected>Full (3 programs to win)</option>
-        <option value="quick">Quick (1 program to win)</option>
-      </select>
-      Players:
-      <select id="playerCount"><option>2</option><option selected>3</option><option>4</option></select>
-      <button id="resetBtn" class="secondary">New Game</button>
-      <button id="dump" class="secondary">Dump GameState (console)</button>
-    </div>
-
-    <div class="layout">
-      <aside class="panel">
-        <div class="panel-header"><strong>Decks & Actions</strong><span class="small" id="actionState">Turn: draw not taken</span></div>
-
-        <div class="toolbar" style="margin-top:8px">
-          <button id="drawMainBtn">Draw Main</button>
-          <button id="drawLangBtn" class="secondary">Draw Language</button>
-          <button id="playSelectedBtn">Play Selected</button>
-        </div>
-
-        <div style="margin-top:8px">
-          <strong>Decks</strong>
-          <div class="deck-list" id="deckList"></div>
-        </div>
-
-        <hr />
-
-        <div>
-          <strong>Players</strong>
-          <div class="players" id="playersList"></div>
-          <div style="margin-top:8px">Current player: <span id="curPlayerName"></span></div>
-          <div style="margin-top:6px" class="status">Completed Programs: <span id="completeCount">0</span></div>
-          <div style="margin-top:6px" class="status">Scores: <span id="scores">-</span></div>
-        </div>
-      </aside>
-
-      <main class="panel">
-        <div class="panel-header"><strong>Play Area</strong>
-          <div class="small">Draw first. Then you may play: 0–1 Function, 0–1 Variable, plus Libraries/Bonuses/IfElse.</div>
-        </div>
-
-        <div class="play-area" id="playArea" style="margin-top:8px">
-          <div><strong>Programs in progress (click to select)</strong></div>
-          <div id="programs"></div>
-
-          <div style="margin-top:10px">
-            <button id="declareBtn">Declare Finished</button>
-            <button id="endTurnBtn" class="secondary">End Turn</button>
-          </div>
-        </div>
-
-        <hr />
-
-        <div>
-          <strong>Your Hand (click to toggle selection)</strong>
-          <div class="hand card-grid" id="hand"></div>
-          <div style="margin-top:8px">
-            <button id="discardBtn" class="secondary">Discard Selected</button>
-          </div>
-        </div>
-      </main>
-
-      <aside class="panel right-col">
-        <div><strong>Event Log</strong></div>
-        <div class="log" id="log"></div>
-        <hr />
-        <div>
-          <strong>Game Controls</strong>
-          <div style="margin-top:8px">
-            <div class="small">
-              – Turn flow: draw (main or lang) ⟶ may play up to 1 Function + 1 Variable (other types allowed).<br/>
-              – Declare: program must have ≥1 Function and satisfy requirements.<br/>
-              – If/Else chain, Libraries & Bonuses affect score. First to target wins.<br/>
-              – Hand limit is 8. Bugs/Events resolve immediately.
-            </div>
-          </div>
-        </div>
-      </aside>
-    </div>
-
-    <footer>Prototype Rules v1.2 — bug/event resolution added. Happy playtesting.</footer>
-  </div>
 
 <script>
 // ----------------- Utilities -----------------
@@ -663,5 +573,96 @@ document.getElementById('discardBtn').onclick = ()=> {
 newGame();
 
 </script>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Hell0, W{}rld! — Playtest Prototype (Rules v1.2)</h1>
+      <div class="status">Playtest: draw → (optional) play 1 Function + 1 Variable — Bugs/Events implemented.</div>
+    </header>
+
+    <div style="margin-bottom:10px" class="controls">
+      Mode:
+      <select id="mode">
+        <option value="full" selected>Full (3 programs to win)</option>
+        <option value="quick">Quick (1 program to win)</option>
+      </select>
+      Players:
+      <select id="playerCount"><option>2</option><option selected>3</option><option>4</option></select>
+      <button id="resetBtn" class="secondary">New Game</button>
+      <button id="dump" class="secondary">Dump GameState (console)</button>
+    </div>
+
+    <div class="layout">
+      <aside class="panel">
+        <div class="panel-header"><strong>Decks & Actions</strong><span class="small" id="actionState">Turn: draw not taken</span></div>
+
+        <div class="toolbar" style="margin-top:8px">
+          <button id="drawMainBtn">Draw Main</button>
+          <button id="drawLangBtn" class="secondary">Draw Language</button>
+          <button id="playSelectedBtn">Play Selected</button>
+        </div>
+
+        <div style="margin-top:8px">
+          <strong>Decks</strong>
+          <div class="deck-list" id="deckList"></div>
+        </div>
+
+        <hr />
+
+        <div>
+          <strong>Players</strong>
+          <div class="players" id="playersList"></div>
+          <div style="margin-top:8px">Current player: <span id="curPlayerName"></span></div>
+          <div style="margin-top:6px" class="status">Completed Programs: <span id="completeCount">0</span></div>
+          <div style="margin-top:6px" class="status">Scores: <span id="scores">-</span></div>
+        </div>
+      </aside>
+
+      <main class="panel">
+        <div class="panel-header"><strong>Play Area</strong>
+          <div class="small">Draw first. Then you may play: 0–1 Function, 0–1 Variable, plus Libraries/Bonuses/IfElse.</div>
+        </div>
+
+        <div class="play-area" id="playArea" style="margin-top:8px">
+          <div><strong>Programs in progress (click to select)</strong></div>
+          <div id="programs"></div>
+
+          <div style="margin-top:10px">
+            <button id="declareBtn">Declare Finished</button>
+            <button id="endTurnBtn" class="secondary">End Turn</button>
+          </div>
+        </div>
+
+        <hr />
+
+        <div>
+          <strong>Your Hand (click to toggle selection)</strong>
+          <div class="hand card-grid" id="hand"></div>
+          <div style="margin-top:8px">
+            <button id="discardBtn" class="secondary">Discard Selected</button>
+          </div>
+        </div>
+      </main>
+
+      <aside class="panel right-col">
+        <div><strong>Event Log</strong></div>
+        <div class="log" id="log"></div>
+        <hr />
+        <div>
+          <strong>Game Controls</strong>
+          <div style="margin-top:8px">
+            <div class="small">
+              – Turn flow: draw (main or lang) ⟶ may play up to 1 Function + 1 Variable (other types allowed).<br/>
+              – Declare: program must have ≥1 Function and satisfy requirements.<br/>
+              – If/Else chain, Libraries & Bonuses affect score. First to target wins.<br/>
+              – Hand limit is 8. Bugs/Events resolve immediately.
+            </div>
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <footer>Prototype Rules v1.2 — bug/event resolution added. Happy playtesting.</footer>
+  </div>
 </body>
 </html>
