@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Hell0, W{}rld! — Playtest Prototype (Rules v1.2)</title>
+<title>Hell0, W{}rld! — Playtest Prototype</title>
 <style>
 :root{--bg:#0f1724;--card:#0b1220;--accent:#0ea5f9;--muted:#94a3b8;--panel:#071024}
 *{box-sizing:border-box;font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif}
@@ -16,7 +16,7 @@ h1{margin:0;font-size:20px}
 .deck-list, .hand, .play-area{min-height:120px}
 .deck{padding:8px;border-radius:8px;background:linear-gradient(180deg,var(--card),#042032);margin-bottom:8px}
 .card{display:inline-block;padding:8px 10px;margin:6px;border-radius:8px;background:#072033;border:1px solid rgba(255,255,255,.04);cursor:pointer;min-width:80px;white-space:pre-line}
-.card.small{padding:6px;font-size:13px}
+.card.selected{outline:2px solid var(--accent)}
 .toolbar{display:flex;gap:8px;margin-bottom:8px}
 button{background:var(--accent);color:#042032;border:none;padding:8px 10px;border-radius:8px;cursor:pointer}
 button.secondary{background:#1f2937;color:#cfe9ff}
@@ -26,126 +26,81 @@ button.secondary{background:#1f2937;color:#cfe9ff}
 .player.active{outline:2px solid var(--accent)}
 .program-slot{min-height:36px;padding:8px;border-radius:6px;background:rgba(255,255,255,.01);margin:6px 0}
 .status{font-size:13px;color:var(--muted)}
-footer{margin-top:12px;color:var(--muted);font-size:13px}
 .controls{display:flex;gap:6px;flex-wrap:wrap}
 .small{font-size:12px;color:var(--muted)}
-.selected{outline:2px solid var(--accent)}
 .card-grid{display:flex;flex-wrap:wrap;gap:6px}
 .panel-header{display:flex;justify-content:space-between;align-items:center}
-label{font-size:13px}
-.right-col .log {height:140px}
-.req-true{color:#4ade80}
-.req-false{color:#f87171}
-.breakdown{font-size:12px;color:#94a3b8;margin-top:6px}
 </style>
 </head>
 <body>
 <div class="wrap">
 <header>
-<h1>Hell0, W{}rld! — Playtest Prototype (Rules v1.2)</h1>
-<div class="status">Playtest: draw → (optional) play 1 Function + 1 Variable — Bugs/Events implemented.</div>
+<h1>Hell0, W{}rld! — Playtest Prototype</h1>
+<div class="status">Hand limit: 8 — On your turn: draw (main/code) or play up to 1 of each card type.</div>
 </header>
 
-<div style="margin-bottom:10px" class="controls">
-Mode:
-<select id="mode">
-<option value="full" selected>Full (3 programs to win)</option>
-<option value="quick">Quick (1 program to win)</option>
-</select>
+<div class="controls">
 Players:
 <select id="playerCount"><option>2</option><option selected>3</option><option>4</option></select>
 <button id="resetBtn" class="secondary">New Game</button>
-<button id="dump" class="secondary">Dump GameState (console)</button>
+<button id="dump" class="secondary">Dump GameState</button>
 </div>
 
 <div class="layout">
 <aside class="panel">
-<div class="panel-header"><strong>Decks & Actions</strong><span class="small" id="actionState">Turn: draw not taken</span></div>
-
-<div class="toolbar" style="margin-top:8px">
-<button id="drawMainBtn">Draw Main</button>
-<button id="drawLangBtn" class="secondary">Draw Language</button>
-<button id="playSelectedBtn">Play Selected</button>
-</div>
-
-<div style="margin-top:8px">
-<strong>Decks</strong>
+<div class="panel-header"><strong>Decks</strong></div>
 <div class="deck-list" id="deckList"></div>
-</div>
-
-<hr />
-
-<div>
-<strong>Players</strong>
-<div class="players" id="playersList"></div>
-<div style="margin-top:8px">Current player: <span id="curPlayerName"></span></div>
-<div style="margin-top:6px" class="status">Completed Programs: <span id="completeCount">0</span></div>
-<div style="margin-top:6px" class="status">Scores: <span id="scores">-</span></div>
-</div>
 </aside>
 
 <main class="panel">
-<div class="panel-header"><strong>Play Area</strong>
-<div class="small">Draw first. Then you may play: 0–1 Function, 0–1 Variable, plus Libraries/Bonuses/IfElse.</div>
-</div>
-
-<div class="play-area" id="playArea" style="margin-top:8px">
-<div><strong>Programs in progress (click to select)</strong></div>
-<div id="programs"></div>
+<div class="panel-header"><strong>Play Area</strong></div>
+<div class="play-area" id="programs"></div>
 
 <div style="margin-top:10px">
-<button id="declareBtn">Declare Finished</button>
+<button id="playSelectedBtn">Play Selected</button>
+<button id="drawMainBtn" class="secondary">Draw Main</button>
+<button id="drawCodeBtn" class="secondary">Draw Code</button>
 <button id="endTurnBtn" class="secondary">End Turn</button>
-</div>
+<button id="declareBtn">Declare Finished</button>
+<button id="discardBtn" class="secondary">Discard Selected</button>
 </div>
 
 <hr />
-
 <div>
-<strong>Your Hand (click to toggle selection)</strong>
+<strong>Your Hand (max 8)</strong>
 <div class="hand card-grid" id="hand"></div>
-<div style="margin-top:8px">
-<button id="discardBtn" class="secondary">Discard Selected</button>
-</div>
 </div>
 </main>
 
-<aside class="panel right-col">
+<aside class="panel">
+<div><strong>Players</strong></div>
+<div class="players" id="playersList"></div>
+<div class="status">Current: <span id="curPlayerName"></span></div>
+<div class="status">Completed Programs: <span id="completeCount">0</span></div>
+<div class="status">Scores: <span id="scores">-</span></div>
+<hr />
 <div><strong>Event Log</strong></div>
 <div class="log" id="log"></div>
-<hr />
-<div>
-<strong>Game Controls</strong>
-<div style="margin-top:8px">
-<div class="small">
-– Turn flow: draw (main or lang) ⟶ may play up to 1 Function + 1 Variable (other types allowed).<br/>
-– Declare: program must have ≥1 Function and satisfy requirements.<br/>
-– If/Else chain, Libraries & Bonuses affect score. First to target wins.<br/>
-– Hand limit is 8. Bugs/Events resolve immediately.
-</div>
-</div>
-</div>
 </aside>
 </div>
-
-<footer>Prototype Rules v1.2 — bug/event resolution added. Happy playtesting.</footer>
+<footer>Prototype Rules — draw → play (1 per type) → end turn.</footer>
 </div>
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-  // ----------------- Utilities -----------------
-  function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
-  function clone(o){return JSON.parse(JSON.stringify(o));}
-  function uiLog(txt){const el=document.getElementById('log');if(!el) return; const div=document.createElement('div'); div.innerText=(new Date()).toLocaleTimeString()+' — '+txt; el.prepend(div); console.log(txt);}
+  // Utilities
+  const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+  const clone=o=>JSON.parse(JSON.stringify(o));
+  const uiLog=txt=>{const el=document.getElementById('log'); if(!el) return; const div=document.createElement('div'); div.innerText=(new Date()).toLocaleTimeString()+' — '+txt; el.prepend(div); console.log(txt);}
 
-  // ----------------- Card pools -----------------
-  const VARIABLES=[{id:'int1',type:'Integer',value:1,label:'Integer 1'},{id:'int2',type:'Integer',value:2,label:'Integer 2'},{id:'int5',type:'Integer',value:5,label:'Integer 5'},{id:'int10',type:'Integer',value:10,label:'Integer 10'},{id:'boolT',type:'Boolean',value:1,label:'Boolean True'},{id:'boolF',type:'Boolean',value:0,label:'Boolean False'},{id:'strHello',type:'String',value:11,label:'"Hello World!" [11]'},{id:'strURL',type:'String',value:22,label:'Raszyra.GitHub.io/Site [22]'},{id:'imgKitten',type:'Media',value:2,label:'kitten.jpg [2MB]'},{id:'videoFail',type:'Media',value:3,label:'fail.mp4 [3MB]'},{id:'classProj',type:'Class',value:9,label:'Project Class [9]'}];
-  const FUNCTIONS=[{id:'fn_calc',type:'Function',requires:[{type:'Integer'},{type:'Integer'}],mult:1.2,label:'Calculator'},{id:'fn_playVideo',type:'Function',requires:[{type:'Media'}],mult:2,label:'playVideo'},{id:'fn_newDB',type:'Function',requires:[{type:'Class'}],mult:1.5,label:'Create DB'},{id:'fn_if',type:'IfElse',requires:[],mult:1,label:'If/Else'}];
+  // Card pools
+  const VARIABLES=[{id:'int1',type:'Integer',label:'Integer 1'},{id:'int2',type:'Integer',label:'Integer 2'},{id:'boolT',type:'Boolean',label:'Boolean True'},{id:'strHello',type:'String',label:'"Hello World!"'}];
+  const FUNCTIONS=[{id:'fn_calc',type:'Function',label:'Calculator'},{id:'fn_play',type:'Function',label:'playVideo'},{id:'fn_if',type:'IfElse',label:'If/Else'}];
 
-  // ----------------- Game state -----------------
+  // Game state
   let gameState={players:[],curPlayer:0,hand:[],programs:[],completed:0,targetPrograms:3,deckVars:[],deckFns:[],turn:'draw'};
 
-  // ----------------- UI -----------------
+  // UI Elements
   const handEl=document.getElementById('hand');
   const programsEl=document.getElementById('programs');
   const deckListEl=document.getElementById('deckList');
@@ -153,11 +108,11 @@ document.addEventListener('DOMContentLoaded', () => {
   const curPlayerNameEl=document.getElementById('curPlayerName');
   const completeCountEl=document.getElementById('completeCount');
   const scoresEl=document.getElementById('scores');
-  const actionStateEl=document.getElementById('actionState');
 
-  // ----------------- Init players -----------------
+  // Players
   function setupPlayers(n){
-    gameState.players=[]; for(let i=1;i<=n;i++){gameState.players.push({name:'Player '+i,hand:[],score:0});}
+    gameState.players=[]; 
+    for(let i=1;i<=n;i++) gameState.players.push({name:'Player '+i,hand:[],score:0});
     renderPlayers();
   }
 
@@ -165,67 +120,98 @@ document.addEventListener('DOMContentLoaded', () => {
     playersListEl.innerHTML='';
     gameState.players.forEach((p,i)=>{
       const div=document.createElement('div'); div.className='player'+(i===gameState.curPlayer?' active':''); div.innerText=p.name;
-      div.onclick=()=>{gameState.curPlayer=i; renderPlayers(); uiLog(p.name+' selected'); updateUI();}
+      div.onclick=()=>{gameState.curPlayer=i; renderPlayers(); updateUI();}
       playersListEl.appendChild(div);
     });
     curPlayerNameEl.innerText=gameState.players[gameState.curPlayer].name;
   }
 
-  // ----------------- Deck setup -----------------
+  // Decks
   function setupDecks(){
     gameState.deckVars=shuffle(clone(VARIABLES));
     gameState.deckFns=shuffle(clone(FUNCTIONS));
-    deckListEl.innerHTML='<div>Variable Deck: '+gameState.deckVars.length+' cards</div><div>Function Deck: '+gameState.deckFns.length+' cards</div>';
+    renderDecks();
+  }
+  function renderDecks(){
+    deckListEl.innerHTML='<div>Main Deck: '+gameState.deckVars.length+'</div><div>Code Deck: '+gameState.deckFns.length+'</div>';
   }
 
-  // ----------------- Hand UI -----------------
+  // Hand
   function renderHand(){
     handEl.innerHTML='';
-    gameState.players[gameState.curPlayer].hand.forEach((c,i)=>{
-      const card=document.createElement('div'); card.className='card'; card.innerText=c.label; card.onclick=()=>{
-        c.selected=!c.selected; card.classList.toggle('selected',!!c.selected);
-      }
+    gameState.players[gameState.curPlayer].hand.forEach(c=>{
+      const card=document.createElement('div'); card.className='card'+(c.selected?' selected':''); card.innerText=c.label;
+      card.onclick=()=>{c.selected=!c.selected; card.classList.toggle('selected',c.selected);}
       handEl.appendChild(card);
     });
   }
 
-  // ----------------- Programs UI -----------------
+  // Programs
   function renderPrograms(){
     programsEl.innerHTML='';
     gameState.programs.forEach((prog,i)=>{
-      const div=document.createElement('div'); div.className='program-slot'; div.innerText=prog.label||'Program '+(i+1);
-      div.onclick=()=>{gameState.programs.forEach(p=>p.selected=false); prog.selected=true; updateUI();}
+      const div=document.createElement('div'); div.className='program-slot'; div.innerText=prog.label;
+      div.onclick=()=>{gameState.programs.forEach(p=>p.selected=false); prog.selected=true; renderPrograms();}
       if(prog.selected) div.classList.add('selected');
       programsEl.appendChild(div);
     });
   }
 
-  // ----------------- Game functions -----------------
+  // Game functions
   function newGame(){
     const pc=parseInt(document.getElementById('playerCount').value);
-    gameState.curPlayer=0; gameState.completed=0;
-    gameState.targetPrograms=document.getElementById('mode').value==='quick'?1:3;
-    setupPlayers(pc); setupDecks(); gameState.players.forEach(p=>p.hand=[]); gameState.programs=[]; updateUI(); uiLog('New game started');
+    gameState.curPlayer=0; gameState.completed=0; gameState.players=[]; gameState.programs=[];
+    setupPlayers(pc); setupDecks();
+    gameState.players.forEach(p=>p.hand=[]);
+    drawStartingHands();
+    updateUI(); uiLog('New game started');
   }
 
-  function drawCard(type){
-    const deck=type==='main'?gameState.deckVars:gameState.deckFns;
+  function drawStartingHands(){
+    gameState.players.forEach(p=>{
+      while(p.hand.length<8){
+        if(gameState.deckVars.length>0) p.hand.push(gameState.deckVars.pop());
+        else if(gameState.deckFns.length>0) p.hand.push(gameState.deckFns.pop());
+      }
+    });
+  }
+
+  function drawCard(deckType){
+    const deck=deckType==='main'?gameState.deckVars:gameState.deckFns;
     if(deck.length===0){uiLog('Deck empty'); return;}
-    const card=deck.pop(); gameState.players[gameState.curPlayer].hand.push(card); uiLog('Drew '+card.label); renderHand(); renderDecks();
+    const hand=gameState.players[gameState.curPlayer].hand;
+    if(hand.length>=8){uiLog('Hand full'); return;}
+    const card=deck.pop(); hand.push(card); uiLog('Drew '+card.label); renderHand(); renderDecks();
   }
-
-  function renderDecks(){deckListEl.innerHTML='<div>Variable Deck: '+gameState.deckVars.length+' cards</div><div>Function Deck: '+gameState.deckFns.length+' cards</div>';}
 
   function playSelected(){
     const hand=gameState.players[gameState.curPlayer].hand;
     const sel=hand.filter(c=>c.selected);
     if(sel.length===0){uiLog('No card selected'); return;}
+    const typesPlayed=new Set();
+    sel.forEach(c=>typesPlayed.add(c.type));
+    const canPlay=sel.filter(c=>{
+      if([...typesPlayed].filter(t=>t===c.type).length>1) return false; 
+      return true;
+    });
     const prog=gameState.programs.find(p=>p.selected)||{label:'Program '+(gameState.programs.length+1),cards:[]};
     if(!gameState.programs.includes(prog)) gameState.programs.push(prog);
-    sel.forEach(c=>{prog.cards.push(c); hand.splice(hand.indexOf(c),1);});
+    canPlay.forEach(c=>{prog.cards.push(c); hand.splice(hand.indexOf(c),1);});
     prog.label='Program '+(gameState.programs.indexOf(prog)+1);
     gameState.programs.forEach(p=>p.selected=false); prog.selected=true;
-    renderHand(); renderPrograms(); uiLog('Played '+sel.map(c=>c.label).join(', '));
+    renderHand(); renderPrograms(); uiLog('Played '+canPlay.map(c=>c.label).join(', '));
+  }
+
+  function discardSelected(){
+    const hand=gameState.players[gameState.curPlayer].hand;
+    const sel=hand.filter(c=>c.selected);
+    sel.forEach(c=>hand.splice(hand.indexOf(c),1));
+    uiLog('Discarded '+sel.map(c=>c.label).join(', ')); renderHand();
+  }
+
+  function endTurn(){
+    gameState.curPlayer=(gameState.curPlayer+1)%gameState.players.length;
+    uiLog('Turn ended'); renderPlayers(); renderHand(); renderPrograms();
   }
 
   function declareProgram(){
@@ -233,39 +219,26 @@ document.addEventListener('DOMContentLoaded', () => {
     if(!prog){uiLog('Select a program first'); return;}
     if(!prog.cards.some(c=>c.type==='Function')){uiLog('Program invalid: needs Function'); return;}
     gameState.completed++; uiLog('Program declared: '+prog.label);
-    updateUI();
-  }
-
-  function endTurn(){
-    gameState.curPlayer=(gameState.curPlayer+1)%gameState.players.length; uiLog('Turn ended'); renderPlayers(); renderHand(); renderPrograms(); updateUI();
-  }
-
-  function discardSelected(){
-    const hand=gameState.players[gameState.curPlayer].hand;
-    const sel=hand.filter(c=>c.selected);
-    sel.forEach(c=>hand.splice(hand.indexOf(c),1));
-    uiLog('Discarded '+sel.map(c=>c.label).join(', '));
-    renderHand();
+    renderPrograms(); completeCountEl.innerText=gameState.completed;
   }
 
   function updateUI(){
     renderHand(); renderPrograms();
     completeCountEl.innerText=gameState.completed;
     scoresEl.innerText=gameState.players.map(p=>p.name+':'+p.hand.length).join(', ');
-    actionStateEl.innerText='Turn: '+gameState.turn;
   }
 
-  // ----------------- Bind buttons -----------------
+  // Button bindings
   document.getElementById('resetBtn').onclick=newGame;
   document.getElementById('drawMainBtn').onclick=()=>drawCard('main');
-  document.getElementById('drawLangBtn').onclick=()=>drawCard('fn');
+  document.getElementById('drawCodeBtn').onclick=()=>drawCard('fn');
   document.getElementById('playSelectedBtn').onclick=playSelected;
   document.getElementById('declareBtn').onclick=declareProgram;
   document.getElementById('endTurnBtn').onclick=endTurn;
   document.getElementById('discardBtn').onclick=discardSelected;
   document.getElementById('dump').onclick=()=>console.log(clone(gameState));
 
-  // ----------------- Start game -----------------
+  // Start game
   newGame();
 });
 </script>
