@@ -6,9 +6,7 @@
 <style>
 body { font-family: Arial; padding: 20px; background: #f0f0f0; margin-bottom: 220px; }
 #game { display: flex; flex-wrap: wrap; gap: 20px; }
-.deck, .player-area, .playarea, .cardinfo, .setup, .console { 
-  border: 1px solid #ccc; padding: 10px; border-radius: 8px; background: #fff; min-width: 220px; 
-}
+.deck, .player-area, .playarea, .ruleset, .cardinfo, .setup, .console { border: 1px solid #ccc; padding: 10px; border-radius: 8px; background: #fff; min-width: 220px; }
 .card { margin: 5px; padding: 5px; border-radius: 5px; cursor: pointer; display:inline-block; }
 .Function { background: #f88; }
 .Variable { background: #88f; }
@@ -19,9 +17,9 @@ body { font-family: Arial; padding: 20px; background: #f0f0f0; margin-bottom: 22
 .Event { background: #0ff; }
 .IfElse { background: #a0a; color: #fff; }
 .selected { border: 2px solid gold; }
-.ruleset { position: fixed; bottom: 0; left: 0; right: 0; max-height: 200px; overflow-y: auto; background: #ddd; transition: max-height 0.3s ease; padding: 10px; }
-.ruleset h3 { cursor: pointer; }
-.ruleset.minimized { max-height: 20px; overflow: hidden; }
+.ruleset { position: fixed; bottom: 0; left: 0; right: 0; max-height: 200px; overflow-y: auto; background:#eee; transition:0.3s; }
+.ruleset h3 { cursor:pointer; }
+.ruleset.minimized { max-height:30px; overflow:hidden; }
 .console { max-height: 150px; overflow-y: auto; background: #111; color: #0f0; font-family: monospace; }
 </style>
 </head>
@@ -30,7 +28,7 @@ body { font-family: Arial; padding: 20px; background: #f0f0f0; margin-bottom: 22
 
 <div class="setup">
 <h3>New Game</h3>
-Players: <input type="number" id="numPlayers" min="3" value="3"><br>
+Players: <input type="number" id="numPlayers" min="2" value="3"><br>
 Game Size: <select id="gameSize">
   <option value="quick">Quick Game</option>
   <option value="full">Full Game</option>
@@ -48,7 +46,7 @@ Game Size: <select id="gameSize">
   <div class="playarea">
     <h3>Program Area</h3>
     <div id="programArea"></div>
-    <button id="completeProgramBtn">Complete Program</button>
+    <button id="completeProgramBtn">Score Program</button>
     <button id="passBtn">Pass Turn</button>
     <button id="drawLangBtn">Draw from Language Deck</button>
   </div>
@@ -57,26 +55,27 @@ Game Size: <select id="gameSize">
 
   <div class="cardinfo">
     <h3>Card Info</h3>
-    <div id="cardInfoText">Click a Function card to see requirements.</div>
+    <div id="cardInfoText">Hover or click a card to see details.</div>
   </div>
 
   <div class="console">
-    <h3>Game Log</h3>
+    <h3>Console Log</h3>
     <div id="consoleLog"></div>
   </div>
 </div>
 
-<div class="ruleset" id="rulesetBox">
-  <h3 id="toggleRules">Ruleset (click to minimize)</h3>
-  <p>
-    - Draw one card from Main or Language Deck per turn.<br>
+<div class="ruleset" id="ruleset">
+  <h3 onclick="toggleRules()">Ruleset (Click to minimize)</h3>
+  <div id="rulesContent">
+    <p>- Draw one card from Main or Language Deck per turn.<br>
     - Play one card of each type per turn.<br>
-    - Functions require specific Variables (see Function Info).<br>
+    - Variables must match function requirements.<br>
+    - Functions require specific variables, libraries, loops.<br>
     - Complete programs with at least one Function.<br>
-    - Score Variables + Bonuses.<br>
+    - Score Variables + Bonuses + difficulty multipliers.<br>
     - First to complete 1 program (Quick) or 3 programs (Full) wins.<br>
-    - Hand limit: 8 cards.<br>
-  </p>
+    - Hand limit: 8 cards.<br></p>
+  </div>
 </div>
 
 <script>
@@ -89,22 +88,6 @@ let mainDeck = [];
 let players = [];
 let selectedFunctionIndex = null;
 
-// --- Function Requirements ---
-const funcRequirements = {
-  "Assign": {variables:["any"], libraries:[], points:1},
-  "Evaluate": {variables:["any","any"], libraries:[], points:2},
-  "Add": {variables:["Integer","Integer"], libraries:[], points:3},
-  "Subtract": {variables:["Integer","Integer"], libraries:[], points:3},
-  "Multiply": {variables:["Integer","Integer"], libraries:[], points:3},
-  "Divide": {variables:["Integer","Integer"], libraries:[], points:3},
-  "Calculator": {variables:["Integer","Integer"], libraries:["IOstream"], points:5},
-  "CoinFlip": {variables:["Boolean"], libraries:[], points:2},
-  "Print": {variables:["String"], libraries:[], points:2},
-  "Concatenate": {variables:["String"], libraries:[], points:2},
-  "Conjoin": {variables:["String","String"], libraries:["IOstream"], points:4}
-  // Can expand with Medium/Hard/Extreme later
-};
-
 // --- Utility Logger ---
 function logAction(msg){
   const log=document.getElementById('consoleLog');
@@ -114,26 +97,67 @@ function logAction(msg){
   log.scrollTop=log.scrollHeight;
 }
 
+// --- Toggle Rules ---
+function toggleRules(){
+  const rules=document.getElementById('ruleset');
+  rules.classList.toggle('minimized');
+}
+
 // --- Card Creation ---
 function createCard(type,name,value=0,desc=""){ return {type,name,value,desc}; }
 const allCards = [];
 
-// Variables
-for(let i=1;i<=12;i++) allCards.push(createCard('Variable',`Integer ${i}`,i,`Integer variable ${i}`));
-for(let i=1;i<=6;i++) allCards.push(createCard('Variable',`Boolean ${i}`,1,'Boolean variable'));
-for(let i=1;i<=5;i++) allCards.push(createCard('Variable',`String ${i}`,i*2,'String variable'));
-for(let i=1;i<=5;i++) allCards.push(createCard('Variable',`Char[] ${i}`,i*2,'Char array'));
-for(let i=1;i<=9;i++) allCards.push(createCard('Variable',`Media ${i}`,i*2,'Audio/Video/Image'));
-for(let i=1;i<=5;i++) allCards.push(createCard('Variable',`Class ${i}`,i*2,'Class variable'));
-for(let i=1;i<=8;i++) allCards.push(createCard('Variable',`Button/Key ${i}`,4,'Input variable'));
+// --- Variable Cards ---
+['Integer','Boolean','String','Char[]','Media','Class','Button/Key'].forEach(t=>{
+  let count=t==='Integer'?12:t==='Boolean'?6:t==='String'?5:t==='Char[]'?5:t==='Media'?9:t==='Class'?5:8;
+  for(let i=1;i<=count;i++) allCards.push(createCard('Variable',`${t} ${i}`,t==='Boolean'?2:i,'Variable of type '+t));
+});
 
-// Functions
-Object.keys(funcRequirements).forEach(f=>allCards.push(createCard('Function',f,funcRequirements[f].points,`Function ${f}`)));
+// --- Function Cards ---
+['Assign','Evaluate','Add','Subtract','Multiply','Divide','Calculator','coinFlip','Print','Concatenate','Conjoin','populateArray','populateMatrix','playSound','showImage','playVideo','createServer','sendPing','newDatabase','awaitInput','Animate','textBasedAdventure','simpleGame','MMO','screenSaver'].forEach(f=>allCards.push(createCard('Function',f,0,'Function '+f)));
+
+// --- Loop Cards ---
+['Do','For','While'].forEach(l=>allCards.push(createCard('Loop',l,0,'Loop '+l)));
+
+// --- Library Cards ---
+['IOstream','Vector','Winmm','SDL2','GDIplus','Ctime','pygame','numpy','socket','math.js','WebSocket'].forEach(l=>allCards.push(createCard('Library',l,0,'Library '+l)));
+
+// --- Bonus Cards ---
+['Controller Support','Bluetooth Compatible','Database Included','Backup Save','Port Forwarding','Remote Server','Borrowed Code','AI Integration','Web Client','Memory Optimization','Language Integration','SQL-Friendly'].forEach(b=>allCards.push(createCard('Bonus',b,5,'Bonus '+b)));
+
+// --- Bug Cards ---
+['Segmentation Fault','Memory Leak','Syntax Error','Corrupted File'].forEach(b=>allCards.push(createCard('Bug',b,0,'Bug '+b)));
+
+// --- Event Cards ---
+['Servers Down','Office Party','New Equipment','Sticky Keys','Install Wizard','Reboot','System Overload','Stack Overflow','Behind Schedule','Overachiever','Promotion','New Management','Trash Day','Reorganization','Blind Debugging'].forEach(e=>allCards.push(createCard('Event',e,0,'Event '+e)));
+
+// --- If/Else Cards ---
+for(let i=1;i<=10;i++) allCards.push(createCard('IfElse',`IfElse ${i}`,i,'IfElse card '+i));
 
 // --- Shuffle ---
 function shuffle(deck){ for(let i=deck.length-1;i>0;i--){ let j=Math.floor(Math.random()*(i+1)); [deck[i],deck[j]]=[deck[j],deck[i]]; }}
 
-// --- Rendering ---
+// --- Function Requirements ---
+const funcRequirements = {
+  Assign: {vars:['any'], libs:[]}, Evaluate:{vars:['any','any'], libs:[]},
+  Add:{vars:['Integer','Integer'],libs:[]}, Subtract:{vars:['Integer','Integer'],libs:[]},
+  Multiply:{vars:['Integer','Integer'],libs:[]}, Divide:{vars:['Integer','Integer'],libs:[]},
+  Calculator:{vars:['Integer','Integer'],libs:['IOstream']}, coinFlip:{vars:['Boolean'],libs:[]},
+  Print:{vars:['String'],libs:['IOstream']}, Concatenate:{vars:['String'],libs:['IOstream']},
+  Conjoin:{vars:['String','String'],libs:['IOstream']},
+  populateArray:{vars:['same'],loops:1,libs:['Vector']}, populateMatrix:{vars:['any'],loops:1,libs:['Vector']},
+  playSound:{vars:['Media'],libs:['Winmm','pygame','HTML5']}, showImage:{vars:['Media'],libs:['Winmm','pygame','HTML5']},
+  playVideo:{vars:['Media'],libs:['Winmm','pygame','HTML5']},
+  createServer:{vars:['String','String','String'],libs:['libcurl','socket','WebSocket']}, sendPing:{vars:['String','String'],libs:['libcurl','socket','WebSocket']},
+  newDatabase:{vars:['Class'],libs:['libcurl','socket','WebSocket']}, awaitInput:{vars:['Button/Key'],loops:1,libs:[]},
+  Animate:{vars:['Media','Media','Media'],loops:1,libs:['GDIplus','pygame','PixiJS']},
+  textBasedAdventure:{vars:['Class'],loops:2,funcs:1,libs:['IOstream']},
+  simpleGame:{vars:['Class'],extras:['awaitInput','playSound','Animate'],libs:[]},
+  MMO:{extras:['simpleGame','createServer'],vars:[],libs:[]},
+  screenSaver:{extras:['Animate','playSound','awaitInput'],vars:[],libs:[]}
+};
+
+// --- Render Functions ---
 function renderPlayers(){
   const container=document.getElementById('players');
   container.innerHTML='';
@@ -155,7 +179,7 @@ function renderHand(idx){
   players[idx].hand.forEach((c,i)=>{
     const cDiv=document.createElement('div');
     cDiv.className=`card ${c.type}`;
-    cDiv.textContent=c.name + (c.type==='Function' ? ` (${c.value} pts)` : '');
+    cDiv.textContent=c.name;
     cDiv.onmouseover=()=>showCardInfo(c);
     if(idx===currentPlayer) cDiv.onclick=()=>playCard(i);
     handDiv.appendChild(cDiv);
@@ -170,15 +194,16 @@ function renderProgram(){
   p.program.forEach((c,i)=>{
     const cDiv=document.createElement('div');
     cDiv.className=`card ${c.type}${selectedFunctionIndex===i?' selected':''}`;
-    cDiv.textContent=c.name + (c.type==='Function'?` (${c.value} pts)`:'');
+    let scoreText=c.type==='Function'&&c.score?` (${c.score})`:'';
+    cDiv.textContent=c.name+scoreText;
     cDiv.onmouseover=()=>showCardInfo(c);
 
     if(c.type==='Function'){
       cDiv.onclick=()=>{ selectedFunctionIndex=i; renderProgram(); };
       if(!c.variables) c.variables=[];
+      if(!c.score) c.score=0;
     }
     div.appendChild(cDiv);
-
     if(c.variables){
       c.variables.forEach(v=>{
         const vDiv=document.createElement('div');
@@ -190,15 +215,7 @@ function renderProgram(){
   });
 }
 
-function showCardInfo(card){
-  const info=document.getElementById('cardInfoText');
-  if(card.type==='Function'){
-    const req=funcRequirements[card.name];
-    if(req){
-      info.innerHTML=`<strong>${card.name}</strong> (requires: ${req.variables.join(', ')} ${req.libraries.length?'/ '+req.libraries.join(', '):''}) <br>Points: ${card.value}`;
-    } else info.textContent=`${card.name} (${card.type}): ${card.desc} Value: ${card.value}`;
-  } else info.textContent=`${card.name} (${card.type}): ${card.desc} Value: ${card.value}`;
-}
+function showCardInfo(card){ document.getElementById('cardInfoText').textContent=`${card.name} (${card.type}): ${card.desc} Value: ${card.value}`;}
 
 // --- Actions ---
 document.getElementById('drawMainBtn').onclick=()=>{
@@ -223,15 +240,16 @@ document.getElementById('drawLangBtn').onclick=()=>{
   renderPlayers();
 };
 
+// --- Play Card ---
 function playCard(idx){
   const p=players[currentPlayer];
   const card=p.hand[idx];
-
   if(card.type==='Variable' && selectedFunctionIndex!==null){
     const func=p.program[selectedFunctionIndex];
     const req=funcRequirements[func.name];
-    const needed=func.variables.length<req.variables.length;
-    if(!needed) return alert('Function already has required variables.');
+    if(!func.variables) func.variables=[];
+    // Check type limits
+    if(req.vars && func.variables.length>=req.vars.length) return alert('Function has enough variables.');
     func.variables.push(card);
     logAction(`${p.name} assigned ${card.name} to ${func.name}`);
     p.hand.splice(idx,1);
@@ -239,33 +257,45 @@ function playCard(idx){
     renderProgram();
     return;
   }
-
-  if(card.type==='Function') card.variables=[];
   logAction(`${p.name} played ${card.type}: ${card.name}`);
   p.hand.splice(idx,1);
+  if(card.type==='Function') card.score=0;
   p.program.push(card);
   renderHand(currentPlayer);
   renderProgram();
 }
 
+// --- Score Program ---
 document.getElementById('completeProgramBtn').onclick=()=>{
   const p=players[currentPlayer];
-  if(!p.program.some(c=>c.type==='Function')) return alert('Need at least one Function!');
-  let score=p.program.reduce((s,c)=>{
-    if(c.type==='Variable') return s+c.value;
-    if(c.type==='Function') return s+c.variables.reduce((s2,v)=>s2+v.value,0)+c.value;
-    if(c.type==='Bonus') return s+(c.value||0);
-    return s;
-  },0);
-  p.score+=score;
-  p.programs.push(score);
-  logAction(`${p.name} completed a program worth ${score} points! Total: ${p.score}`);
+  let valid=true;
+  let totalScore=0;
+  for(const f of p.program){
+    if(f.type==='Function'){
+      const req=funcRequirements[f.name];
+      let fScore=f.variables.reduce((s,v)=>s+(typeof v.value==='number'?v.value:0),0);
+      // Check required variables
+      if(req.vars && f.variables.length<req.vars.length){
+        logAction(`Function ${f.name} incomplete! Missing variables.`);
+        valid=false;
+      }
+      // Add difficulty multipliers
+      if(['populateArray','populateMatrix','playSound','showImage','playVideo'].includes(f.name)) fScore*=2;
+      if(['createServer','sendPing','newDatabase','awaitInput','Animate'].includes(f.name)) fScore*=3;
+      if(['textBasedAdventure','simpleGame','MMO','screenSaver'].includes(f.name)) fScore*=5;
+      f.score=fScore;
+      totalScore+=fScore;
+    } else if(f.type==='Variable') totalScore+=f.value;
+    else if(f.type==='Bonus') totalScore+=f.value;
+  }
+  if(!valid) return alert('Program incomplete! Check variables.');
+  p.score+=totalScore;
+  logAction(`${p.name} completed program worth ${totalScore} points! Total: ${p.score}`);
   p.program=[];
   selectedFunctionIndex=null;
-  if(p.programs.length>=PROGRAMS_TO_WIN){ 
-    alert(`${p.name} wins the game!`);
-    logAction(`${p.name} has won the game!`);
-    document.getElementById('game').style.display='none'; 
+  if(p.score>=PROGRAMS_TO_WIN*10){ // simplified win check
+    alert(`${p.name} wins!`);
+    document.getElementById('game').style.display='none';
     return;
   }
   nextPlayer();
@@ -283,11 +313,6 @@ function nextPlayer(){
   renderProgram(); 
 }
 
-// --- Rules Minimizer ---
-document.getElementById('toggleRules').onclick=()=>{
-  document.getElementById('rulesetBox').classList.toggle('minimized');
-};
-
 // --- New Game ---
 document.getElementById('newGameBtn').onclick=()=>{
   NUM_PLAYERS=parseInt(document.getElementById('numPlayers').value);
@@ -300,7 +325,9 @@ document.getElementById('newGameBtn').onclick=()=>{
     const langDeck=allCards.filter(c=>['Function','Loop','Library'].includes(c.type));
     shuffle(langDeck);
     const hand=[];
-    for(let j=0;j<MAX_HAND;j++) hand.push(langDeck.pop());
+    for(let h=0;h<MAX_HAND;h++){
+      if(langDeck.length>0) hand.push(langDeck.pop());
+    }
     players.push({name:`Player ${i+1}`, hand:hand, programs:[], score:0, program:[], langDeck:langDeck});
   }
   mainDeck=allCards.filter(c=>['Variable','Bonus','Bug','Event','IfElse'].includes(c.type));
