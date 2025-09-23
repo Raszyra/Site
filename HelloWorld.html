@@ -2,303 +2,231 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Hello, World! Full Game</title>
+<title>Hello, World! Prototype</title>
 <style>
-/* --- BODY & LAYOUT --- */
-body { font-family: 'Fira Code', monospace; background: #1e1e2f; color: #eee; margin: 0; padding: 20px; }
-h1, h2, h3 { color: #0ff; margin: 5px 0; }
-#game { display: flex; flex-wrap: wrap; gap: 20px; margin-top: 20px; }
-.deck, .player-area, .playarea, .cardinfo, .setup, .console { border-radius: 8px; padding: 10px; background: #2a2a3d; min-width: 220px; }
-.card { margin: 5px; padding: 5px 10px; border-radius: 5px; cursor: pointer; display:inline-block; transition: 0.2s; }
-.card:hover { transform: translateY(-3px); box-shadow: 0 2px 5px #0ff; }
-.selected { border: 2px solid #0f0; }
-.Variable { background: #1e90ff; color: #fff; }
-.Function { background: #ff4c4c; color: #fff; }
-.Loop { background: #ffa500; color: #000; }
-.Library { background: #32cd32; color: #000; }
-.Bonus { background: #ffd700; color: #000; }
-.Bug { background: #333; color: #fff; }
-.Event { background: #0ff; color: #000; }
-.IfElse { background: #a020f0; color: #fff; }
-.console { max-height: 200px; overflow-y: auto; background: #111; color: #0f0; font-family: monospace; margin-top: 10px; }
-.ruleset { position: fixed; bottom: 0; left: 0; right: 0; max-height: 220px; overflow-y: auto; background: #111; border-top: 2px solid #0ff; padding: 10px; }
-.ruleset h3 { cursor: pointer; }
-.hidden { display: none; }
-button { margin: 3px; padding: 5px 10px; border-radius: 5px; border: none; cursor: pointer; background: #0ff; color: #111; transition: 0.2s; }
-button:hover { background: #0aa; }
+  body { font-family: Arial, sans-serif; background:#f5f5f5; color:#222; padding:20px;}
+  h1,h2,h3 { color:#c00; }
+  .card { border:1px solid #333; border-radius:5px; padding:10px; margin:5px; background:#fff;}
+  .hand, .program { display:flex; gap:5px; margin:10px 0;}
+  .selected { border:2px solid green; }
+  #log { border:1px solid #333; height:150px; overflow:auto; background:#eee; padding:5px;}
+  button { margin:5px; padding:5px 10px; }
+  details { margin:10px 0; }
 </style>
 </head>
 <body>
-<h1>Hello, World! Full Game</h1>
 
-<div class="setup">
-<h3>New Game</h3>
-Players: <input type="number" id="numPlayers" min="2" value="3"><br>
-Game Size: <select id="gameSize">
-  <option value="quick">Quick Game</option>
-  <option value="full" selected>Full Game</option>
-</select><br>
-<button id="newGameBtn">Start Game</button>
+<h1>Hello, World! Prototype</h1>
+<p><em>“Finally, a card game about work!”</em></p>
+<p><strong>Prototype:</strong> This is a prototype to gather feedback for the printed product. Questions or feedback? Email: <a href="mailto:faction7entertainment@gmail.com">faction7entertainment@gmail.com</a></p>
+
+<details open>
+<summary>Rules</summary>
+<div style="padding:10px; background:#fff; border:1px solid #ccc;">
+<pre>
+Genre: Card
+Rated: E
+Length: 1-2 hrs
+Players: 2+
+Pieces: Base 100 card deck + 3 individual ~40 card Language decks
+
+Description:
+Complete programs by drawing code structure cards. IT events disrupt or challenge opponents.
+
+Gameplay:
+- Hands of 8 cards
+- Turns: draw from main deck, draw from code deck, play 1 card of each type
+- Game ends: 3 programs (full game) or 1 program (quick game) or deck exhausted
+- Must meet function requirements: Variables, Libraries, If/Else, Bonus
+
+Languages:
+C++: Use Namespace Std, Pointer Variables
+Python: Dynamic Typing
+JavaScript: Event Driven
+
+Card Types:
+Language Decks: Functions, Libraries, Loops (~40)
+Main Deck: Events, Bonuses, Bugs, Variables (100)
+
+Variables:
+Pointer, Integer, Boolean, String, Char, Media, Class, Button/Key Press
+
+Loops:
+Do (+5), For (requires Integer), While (requires 2 vars)
+
+Libraries:
+C++: IOStream, Vector, Winmm, SDL2, GDIplus, Ctime
+Python: pygame, numpy, socket
+JavaScript: math.js, WebSocket
+
+Functions:
+Easy (x11), Medium (x5), Hard (x5), Extreme (x4)
+Refer to full rulebook for variable & library requirements.
+
+Bugs, Events, Bonuses: see full rulebook for details
+</pre>
 </div>
+</details>
 
-<div id="game" style="display:none;">
-  <div class="deck">
-    <h3>Main Deck</h3>
-    <button id="drawMainBtn">Draw from Main Deck</button>
-    <div id="deckCount"></div>
-  </div>
+<h2>Player Info</h2>
+<div id="players"></div>
 
-  <div class="playarea">
-    <h3>Program Area</h3>
-    <div id="programArea"></div>
-    <button id="playCardBtn">Play Selected Card</button>
-    <button id="completeProgramBtn">Finish Program</button>
-    <button id="passBtn">Pass Turn</button>
-    <button id="drawLangBtn">Draw from Language Deck</button>
-  </div>
+<h2>Selected Function</h2>
+<div id="selectedFunction"></div>
 
-  <div id="players"></div>
+<h2>Controls</h2>
+<button onclick="drawMain(currentPlayer)">Draw Main Deck</button>
+<button onclick="drawLang(currentPlayer)">Draw Language Deck</button>
+<button onclick="scoreFunction(currentPlayer)">Play Selected Function</button>
+<button onclick="passTurn()">End Turn</button>
 
-  <div class="cardinfo">
-    <h3>Card Info</h3>
-    <div id="cardInfoText">Select a card to see details.</div>
-  </div>
-
-  <div class="console">
-    <h3>Console Log</h3>
-    <div id="consoleLog"></div>
-  </div>
-</div>
-
-<div class="ruleset">
-<h3 id="toggleRules">Ruleset (click to collapse)</h3>
-<div id="rulesContent">
-<p>
-- Start with 8 cards in hand.<br>
-- One card played, one card drawn per turn.<br>
-- Variables go inside Functions; Functions can nest inside Loops or other Functions.<br>
-- Must have required Variables and Libraries to complete a Function.<br>
-- If/Else cards chain Functions for extra points.<br>
-- Bonuses add extra points.<br>
-- First to 1 program (Quick) or 3 programs (Full) wins.<br>
-</p>
-</div>
-</div>
+<h2>Log</h2>
+<div id="log"></div>
 
 <script>
-// --- Game Variables ---
-let NUM_PLAYERS = 3;
-let PROGRAMS_TO_WIN = 3;
-const MAX_HAND = 8;
+// --- Constants ---
+const NUM_PLAYERS = 2;
 let currentPlayer = 0;
-let mainDeck = [];
-let players = [];
-let selectedCardIndex = null;
 let selectedFunctionIndex = null;
 
-// --- Logger ---
+// --- Game State ---
+const mainDeck = [];
+const players = Array.from({length: NUM_PLAYERS}, (_,i)=>({
+  name: `Player ${i+1}`,
+  score: 0,
+  hand: [],
+  program: [],
+  langDeck: []
+}));
+
+// --- Card Class ---
+function Card(name,type,options={}){
+  this.name = name;
+  this.type = type;
+  this.value = options.value || 0;
+  this.reqVars = options.reqVars || 0;
+  this.reqLibs = options.reqLibs || [];
+  this.difficulty = options.difficulty || 1;
+}
+
+// --- Logging ---
 function logAction(msg){
-  const log=document.getElementById('consoleLog');
-  const entry=document.createElement('div');
-  entry.textContent=`> ${msg}`;
-  log.appendChild(entry);
-  log.scrollTop=log.scrollHeight;
+  const log = document.getElementById('log');
+  log.innerHTML += msg + "<br>";
+  log.scrollTop = log.scrollHeight;
 }
 
-// --- Card Creation ---
-function createCard(type,name,value=0,desc="",reqVars=[],reqLibs=[],difficulty=1){ 
-  return {type,name,value,desc,variables:[],reqVars,reqLibs,difficulty}; 
-}
-
-// --- Sample Cards (For brevity, a minimal demo set) ---
-const allCards = [];
-// Variables
-['Integer','Boolean','String','Media','Class','Button'].forEach((v,i)=>allCards.push(createCard('Variable',v+' '+(i+1),i+1,v+' variable')));
-// Functions
-allCards.push(createCard('Function','Assign',0,'Assign a variable',['any'],[],1));
-allCards.push(createCard('Function','Add',0,'Add two integers',['Integer','Integer'],[],1));
-allCards.push(createCard('Function','Calculator',0,'2 Integers + IOStream',['Integer','Integer'],['IOstream'],1));
-allCards.push(createCard('Function','Print',0,'Print 1 String',['String'],['IOstream'],1));
-// Libraries
-allCards.push(createCard('Library','IOstream',5,'C++ IO library'));
-allCards.push(createCard('Library','Vector',5,'C++ Vector library'));
-
-// --- Shuffle ---
-function shuffle(deck){ for(let i=deck.length-1;i>0;i--){ let j=Math.floor(Math.random()*(i+1)); [deck[i],deck[j]]=[deck[j],deck[i]]; }}
-
-// --- Rendering ---
+// --- Render Players ---
 function renderPlayers(){
-  const container=document.getElementById('players');
-  container.innerHTML='';
-  players.forEach((p,idx)=>{
-    const div=document.createElement('div');
-    div.className='player-area';
-    div.innerHTML=`<h3>${p.name} ${idx===currentPlayer?'(Current)':''}</h3>
-      <strong>Score:</strong> ${p.score}<br>
-      <strong>Hand:</strong><div id="hand-${idx}"></div>
-      <strong>Language Deck:</strong> <div id="langDeckCount-${idx}">${p.langDeck.length} cards</div>`;
+  const container = document.getElementById('players');
+  container.innerHTML = "";
+  players.forEach((p,pi)=>{
+    const div = document.createElement('div');
+    div.className = 'card';
+    div.innerHTML = `<strong>${p.name}</strong> - Score: ${p.score}<br>
+      Hand: <div class="hand">${p.hand.map((c,ci)=>
+        `<div class="card ${ci===selectedFunctionIndex?'selected':''}" onclick="selectedFunctionIndex=${ci};renderPlayers()">${c.name}</div>`).join('')}</div>
+      Program: <div class="program">${p.program.map(c=>`<div class="card">${c.name}</div>`).join('')}</div>`;
     container.appendChild(div);
-    renderHand(idx);
   });
+
+  const selDiv = document.getElementById('selectedFunction');
+  if(selectedFunctionIndex!==null){
+    const c = players[currentPlayer].hand[selectedFunctionIndex];
+    selDiv.innerHTML = `<strong>${c.name}</strong> (${c.type}) - Requires ${c.reqVars} variables, Libraries: ${c.reqLibs.join(', ')}`;
+  } else selDiv.innerHTML = "None";
 }
 
-function renderHand(idx){
-  const handDiv=document.getElementById(`hand-${idx}`);
-  handDiv.innerHTML='';
-  players[idx].hand.forEach((c,i)=>{
-    const cDiv=document.createElement('div');
-    cDiv.className=`card ${c.type}${i===selectedCardIndex?' selected':''}`;
-    cDiv.textContent=c.name;
-    cDiv.onclick=()=>{ selectedCardIndex=i; renderHand(idx); showCardInfo(c); };
-    handDiv.appendChild(cDiv);
-  });
-}
-
-function renderProgram(){
-  const div=document.getElementById('programArea'); div.innerHTML='';
-  const p=players[currentPlayer];
-  p.program.forEach((c,i)=>{
-    const cDiv=document.createElement('div');
-    cDiv.className=`card ${c.type}${i===selectedFunctionIndex?' selected':''}`;
-    cDiv.textContent=c.name+' (Score:'+calculateFunctionScore(c)+')';
-    div.appendChild(cDiv);
-  });
-}
-
-function showCardInfo(card){ 
-  document.getElementById('cardInfoText').textContent=`${card.name} (${card.type}): ${card.desc}`; 
-}
-
-// --- Score check ---
-function calculateFunctionScore(func){
-  let score=0;
-  if(func.type!=='Function') return 0;
-  func.variables.forEach(v=>score+=v.value);
-  if(func.reqLibs && func.reqLibs.length>0) score+=func.reqLibs.length*2;
-  score*=func.difficulty;
-  return score;
-}
-
-// --- Actions ---
-document.getElementById('drawMainBtn').onclick=()=>{
-  const p=players[currentPlayer];
-  if(p.hand.length>=MAX_HAND) return alert('Hand full!');
-  if(mainDeck.length===0) return alert('Main deck empty!');
-  const card=mainDeck.pop();
-  p.hand.push(card);
-  logAction(`${p.name} drew from Main Deck: ${card.name}`);
-  renderHand(currentPlayer);
-  renderDeck();
-};
-
-document.getElementById('drawLangBtn').onclick=()=>{
-  const p=players[currentPlayer];
-  if(p.hand.length>=MAX_HAND) return alert('Hand full!');
-  if(p.langDeck.length===0) return alert('Language deck empty!');
-  const card=p.langDeck.pop();
-  p.hand.push(card);
-  logAction(`${p.name} drew from Language Deck: ${card.name}`);
-  renderHand(currentPlayer);
-  renderPlayers();
-};
-
-document.getElementById('playCardBtn').onclick=()=>{
-  const p=players[currentPlayer];
-  if(selectedCardIndex===null) return;
-  const card=p.hand[selectedCardIndex];
-  if(card.type==='Variable' && selectedFunctionIndex!==null){
-    const func=p.program[selectedFunctionIndex];
-    if(func.variables.length>=card.reqVars?.length || func.reqVars.includes(card.type) || func.reqVars.includes('any')){
-      func.variables.push(card);
-      logAction(`${p.name} assigned ${card.name} to ${func.name}`);
-      p.hand.splice(selectedCardIndex,1);
-      selectedCardIndex=null;
-      renderHand(currentPlayer);
-      renderProgram();
-      return;
-    } else {
-      alert('Cannot assign this variable to selected function.');
-      return;
-    }
-  }
-  // Place function in program
-  if(card.type==='Function' || card.type==='Library'){
-    p.program.push(card);
-    logAction(`${p.name} played ${card.type}: ${card.name}`);
-    p.hand.splice(selectedCardIndex,1);
-    selectedCardIndex=null;
-    renderHand(currentPlayer);
-    renderProgram();
-  }
-};
-
-document.getElementById('completeProgramBtn').onclick=()=>{
-  const p=players[currentPlayer];
-  if(p.program.length===0) return alert('No program built!');
-  // check function requirements
-  for(const f of p.program){
-    if(f.type==='Function'){
-      if(f.reqVars.length>f.variables.length) return alert('Function '+f.name+' is incomplete!');
-    }
-  }
-  let score=p.program.reduce((s,c)=>s+calculateFunctionScore(c),0);
-  p.score+=score;
-  logAction(`${p.name} completed a program worth ${score} points! Total: ${p.score}`);
-  p.program=[];
-  selectedFunctionIndex=null;
-  if(p.score>=PROGRAMS_TO_WIN*10){ // arbitrary scoring threshold
-    alert(`${p.name} wins!`);
-    document.getElementById('game').style.display='none';
+// --- Game Functions ---
+function scoreFunction(playerIndex){
+  const player = players[playerIndex];
+  if(selectedFunctionIndex === null){
+    logAction("No function selected.");
     return;
   }
-  nextPlayer();
-};
+  const card = player.hand[selectedFunctionIndex];
+  if(card.type !== "Function"){ logAction("Selected card is not a Function."); return; }
 
-document.getElementById('passBtn').onclick=()=>{
-  logAction(`${players[currentPlayer].name} passed their turn.`);
-  nextPlayer();
-};
+  const progVars = player.program.filter(c => c.type==="Variable");
+  const progLibs = player.program.filter(c => c.type==="Library").map(c=>c.name);
 
-function nextPlayer(){
-  currentPlayer=(currentPlayer+1)%players.length;
-  logAction(`It is now ${players[currentPlayer].name}'s turn.`);
-  selectedCardIndex=null;
+  if(card.reqVars !== undefined && progVars.length < card.reqVars){
+    logAction(`Cannot play ${card.name}: requires ${card.reqVars} variable(s). You have ${progVars.length}.`);
+    return;
+  }
+  for(const lib of card.reqLibs){
+    if(!progLibs.includes(lib)){
+      logAction(`Cannot play ${card.name}: missing Library ${lib}.`);
+      return;
+    }
+  }
+
+  // --- Score Calculation ---
+  let score = 0;
+  progVars.forEach(v=>{
+    switch(v.type){
+      case "Integer": score += v.value; break;
+      case "Boolean": score += 2; break;
+      case "String": score += v.value.length; break;
+      case "Char": score += v.value.length; break;
+      case "Media": score += v.value; break;
+      case "Class": score += (v.value || 0)*2; break;
+      case "ButtonPress": score += 4; break;
+      default: score += 1;
+    }
+  });
+
+  const loops = player.program.filter(c=>c.type==="Loop");
+  loops.forEach(loop=>{
+    if(loop.name === "Do") score += 5;
+    else if(loop.name === "For"){
+      const intVar = progVars.find(v=>v.type==="Integer");
+      if(intVar) score += intVar.value;
+    }
+    else if(loop.name === "While"){
+      if(progVars.length >= 2) score += progVars[0].value + progVars[1].value;
+    }
+  });
+
+  score *= card.difficulty || 1;
+  const bonuses = player.program.filter(c=>c.type==="Bonus");
+  bonuses.forEach(b=>{ if(b.value) score += b.value; });
+
+  const nestedFuncs = player.program.filter(c=>c.type==="Function" && c !== card);
+  nestedFuncs.forEach(nf => score *= nf.difficulty || 1);
+
+  player.score += score;
+  player.program.push(card);
+  player.hand.splice(selectedFunctionIndex,1);
+  selectedFunctionIndex = null;
+
+  logAction(`${card.name} played for ${score} points! Total: ${player.score}`);
   renderPlayers();
-  renderProgram();
 }
 
-// --- New Game ---
-document.getElementById('newGameBtn').onclick=()=>{
-  NUM_PLAYERS=parseInt(document.getElementById('numPlayers').value);
-  const size=document.getElementById('gameSize').value;
-  PROGRAMS_TO_WIN=size==='quick'?1:3;
-  currentPlayer=0;
-  players.length=0;
-  mainDeck=allCards.filter(c=>['Variable','Bonus','Bug','Event','IfElse'].includes(c.type));
-  shuffle(mainDeck);
-  for(let i=0;i<NUM_PLAYERS;i++){
-    const langDeck=allCards.filter(c=>['Function','Loop','Library'].includes(c.type));
-    shuffle(langDeck);
-    const hand=[];
-    for(let j=0;j<MAX_HAND;j++){
-      hand.push(mainDeck.pop()||langDeck.pop());
-    }
-    players.push({name:`Player ${i+1}`, hand:hand, programs:[], score:0, program:[], langDeck:langDeck});
-  }
-  document.getElementById('consoleLog').innerHTML='';
-  logAction(`New game started with ${NUM_PLAYERS} players. First to ${PROGRAMS_TO_WIN} programs wins.`);
-  document.getElementById('game').style.display='flex';
+function drawLang(playerIndex){
+  const player = players[playerIndex];
+  if(player.langDeck.length === 0){ logAction("No more Language Deck cards."); return; }
+  const drawn = player.langDeck.shift();
+  player.hand.push(drawn);
+  logAction(`${player.name} drew ${drawn.name} from Language Deck.`);
   renderPlayers();
-  renderDeck();
-  renderProgram();
-};
+}
 
-function renderDeck(){ document.getElementById('deckCount').textContent=`Cards left: ${mainDeck.length}`; }
+function drawMain(playerIndex){
+  if(mainDeck.length === 0){ logAction("Main Deck empty."); return; }
+  const card = mainDeck.shift();
+  players[playerIndex].hand.push(card);
+  logAction(`${players[playerIndex].name} drew ${card.name} from Main Deck.`);
+  renderPlayers();
+}
 
-// --- Rules collapse ---
-document.getElementById('toggleRules').onclick=()=>{
-  document.getElementById('rulesContent').classList.toggle('hidden');
-};
+function passTurn(){
+  currentPlayer = (currentPlayer + 1) % NUM_PLAYERS;
+  logAction(`Turn: ${players[currentPlayer].name}`);
+}
+
+renderPlayers();
 </script>
 </body>
 </html>
