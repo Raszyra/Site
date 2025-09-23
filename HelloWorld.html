@@ -1,215 +1,752 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Hello, World! Full Game</title>
+<meta charset="utf-8"/>
+<title>Hello, World! — Complete Prototype</title>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
 <style>
-body { font-family: Arial; padding: 20px; background: #f0f0f0; }
-#game { display: flex; flex-wrap: wrap; gap: 20px; }
-.deck, .player-area, .playarea, .ruleset, .cardinfo, .setup { border: 1px solid #ccc; padding: 10px; border-radius: 8px; background: #fff; min-width: 220px; }
-.card { margin: 5px; padding: 5px; border-radius: 5px; cursor: pointer; display:inline-block; }
-.Function { background: #f88; }
-.Variable { background: #88f; }
-.Loop { background: #f90; }
-.Library { background: #8f8; }
-.Bonus { background: #ff8; }
-.Bug { background: #333; color: #fff; }
-.Event { background: #0ff; }
-.IfElse { background: #a0a; color: #fff; }
+  body{font-family:Arial,Helvetica,sans-serif;background:#f3f7fb;margin:0;padding:20px;color:#111}
+  h1{margin:0 0 12px}
+  .container{display:flex;flex-wrap:wrap;gap:18px}
+  .panel{background:#fff;border:1px solid #d7e0ea;border-radius:10px;padding:12px;min-width:260px;box-shadow:0 2px 6px rgba(20,30,40,0.04)}
+  .setup .panel{min-width:360px}
+  .card{display:inline-block;padding:6px 8px;margin:6px;border-radius:6px;font-size:13px;cursor:pointer;border:1px solid rgba(0,0,0,0.06)}
+  .Function{background:#ffd6d6}
+  .Variable{background:#d6e0ff}
+  .Loop{background:#ffe6c8}
+  .Library{background:#dff7d8}
+  .Bonus{background:#fff1b8}
+  .Bug{background:#2f2f2f;color:#fff}
+  .Event{background:#c8f3f7}
+  .IfElse{background:#d8d0f7}
+  .selected{outline:3px solid gold;border-radius:8px}
+  .player-area{margin-bottom:8px}
+  button{padding:8px 10px;border-radius:8px;border:1px solid #cbd6e0;background:#f7fbff;cursor:pointer}
+  .small{font-size:12px;color:#555}
+  .program-block{margin:6px 0;padding:8px;border-radius:8px;background:#fcfeff;border:1px solid #e6eef6}
+  .nested {margin-left:18px}
+  .ruleset p{margin:6px 0;font-size:13px}
 </style>
 </head>
 <body>
-<h1>Hello, World! Full Game</h1>
+<h1>Hello, World! — Complete Prototype</h1>
 
-<div class="setup">
-<h3>New Game</h3>
-Players: <input type="number" id="numPlayers" min="3" value="3"><br>
-Game Size: <select id="gameSize">
-  <option value="quick">Quick Game</option>
-  <option value="full">Full Game</option>
-</select><br>
-<button id="newGameBtn">Start Game</button>
-</div>
+<div class="container">
+  <div class="panel setup">
+    <h3>New Game</h3>
+    <label>Players: <input id="numPlayers" type="number" min="3" value="3" style="width:60px"/></label>
+    <div style="height:8px"></div>
+    <label>Game Size:
+      <select id="gameSize">
+        <option value="quick">Quick (1 program)</option>
+        <option value="full" selected>Full (3 programs)</option>
+      </select>
+    </label>
+    <div style="height:10px"></div>
+    <button id="newGameBtn">Start Game</button>
+    <div style="height:10px"></div>
+    <div class="small">Controls: draw from Main or Language deck; click a Function to select it; play Variables/Loops/IfElse/Libraries/Bonuses into selected function; play Functions into selected function to nest them; use Complete Program to score.</div>
+  </div>
 
-<div id="game" style="display:none;">
-  <div class="deck">
+  <div class="panel" id="deckPanel">
     <h3>Main Deck</h3>
     <button id="drawMainBtn">Draw from Main Deck</button>
-    <div id="deckCount"></div>
+    <div style="height:8px"></div>
+    <div id="deckCount" class="small">Cards left: 0</div>
   </div>
 
-  <div id="players"></div>
-
-  <div class="playarea">
+  <div class="panel playarea">
     <h3>Program Area</h3>
     <div id="programArea"></div>
-    <button id="completeProgramBtn">Complete Program</button>
-    <button id="passBtn">Pass Turn</button>
+    <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap">
+      <button id="drawLangBtn">Draw from Language Deck</button>
+      <button id="passBtn">Pass Turn</button>
+      <button id="completeProgramBtn">Complete Program</button>
+    </div>
   </div>
 
-  <div class="ruleset">
+  <div class="panel ruleset">
     <h3>Ruleset</h3>
-    <p>
-      - Draw one card from Main or Language Deck per turn.<br>
-      - Play one card of each type per turn.<br>
-      - Complete programs with at least one Function.<br>
-      - Score Variables + Bonuses.<br>
-      - First to complete 1 program (Quick) or 3 programs (Full) wins.<br>
-      - Hand limit: 8 cards.<br>
-    </p>
+    <p>- Each turn: draw (Main or Language), then you may play cards.</p>
+    <p>- You may play variables, loops, libraries, if/else, bonuses into a selected Function; or play a Function (top-level or nested if selected).</p>
+    <p>- Functions act as containers; Variables are stored inside Functions; Loops/IfElse/Libraries/Bonuses attach to Functions.</p>
+    <p>- Loops: Do +5; For adds an Integer variable value; While adds two variable values.</p>
+    <p>- If/Else: chain of m cards gives m*(m+1) bonus points (requires at least one variable).</p>
+    <p>- Nested Functions: parent base is multiplied by (1 + number_of_direct_nested_functions); nested function scores are added recursively.</p>
+    <p>- Some Functions require Libraries (ex: Calculator, Conjoin, Concatenate require IOstream). Missing required Library → that function scores 0.</p>
+    <p>- Bugs & Events apply immediately.</p>
+    <p>- First to complete configured number of programs wins. Hand limit: 8 cards.</p>
   </div>
 
-  <div class="cardinfo">
+  <div class="panel cardinfo">
     <h3>Card Info</h3>
     <div id="cardInfoText">Hover or click a card to see details.</div>
   </div>
 </div>
 
+<div style="height:18px"></div>
+
+<div class="container" id="playersContainer" style="align-items:flex-start"></div>
+
 <script>
-// --- Game Variables ---
+/* -----------------------------
+   Full game implementation
+   -----------------------------*/
+const MAX_HAND = 8;
 let NUM_PLAYERS = 3;
 let PROGRAMS_TO_WIN = 3;
-const MAX_HAND = 8;
 let currentPlayer = 0;
 let mainDeck = [];
 let players = [];
+let selectedFunctionPath = null; // path array: [index, nestedIndex, ...] to navigate nested fns
 
-// --- Card Creation ---
-function createCard(type,name,value=0,desc=""){ return {type,name,value,desc}; }
-
+// Create card factory
+function createCard(type,name,value=0,desc=''){ return {type,name,value,desc}; }
 const allCards = [];
-// Variables
-for(let i=1;i<=12;i++) allCards.push(createCard('Variable',`Integer ${i}`,i,`Integer variable ${i}`));
-for(let i=1;i<=6;i++) allCards.push(createCard('Variable',`Boolean ${i}`,1,'Boolean variable'));
-for(let i=1;i<=5;i++) allCards.push(createCard('Variable',`String ${i}`,i*2,'String variable'));
+
+// --- Build card pool (representative; duplicates simulated by deck copies) ---
+for(let i=1;i<=12;i++) allCards.push(createCard('Variable',`Integer ${i}`,i,`Integer value ${i}`));
+for(let i=1;i<=6;i++) allCards.push(createCard('Variable',`Boolean ${i}`,1,'Boolean (1/0)'));
+allCards.push(createCard('Variable','Integer 0',0,'Blank/zero integer'));
+for(let i=1;i<=5;i++) allCards.push(createCard('Variable',`String ${i}`,i*2,`String len ${i*2}`));
 for(let i=1;i<=5;i++) allCards.push(createCard('Variable',`Char[] ${i}`,i*2,'Char array'));
-for(let i=1;i<=9;i++) allCards.push(createCard('Variable',`Media ${i}`,i*2,'Audio/Video/Image'));
+for(let i=1;i<=9;i++) allCards.push(createCard('Variable',`Media ${i}`,i*2,'Image/Audio/Video file'));
 for(let i=1;i<=5;i++) allCards.push(createCard('Variable',`Class ${i}`,i*2,'Class variable'));
 for(let i=1;i<=8;i++) allCards.push(createCard('Variable',`Button/Key ${i}`,4,'Input variable'));
 
-// Functions
-['Assign','Evaluate','Add','Subtract','Multiply','Divide','Calculator','CoinFlip','Print','Concatenate','Conjoin'].forEach(f=>allCards.push(createCard('Function',f,0,`Function ${f}`)));
+// Functions list
+['Assign','Evaluate','Add','Subtract','Multiply','Divide','Calculator','CoinFlip','Print','Concatenate','Conjoin','populateArray','populateMatrix','playSound','showImage','playVideo','createServer','sendPing','newDatabase','awaitInput','Animate','textBasedAdventure','simpleGame','MMO','screenSaver'].forEach(n=>{
+  allCards.push(createCard('Function',n,0,`Function ${n}`));
+});
 
 // Loops
-['Do','For','While'].forEach(l=>allCards.push(createCard('Loop',l,0,`Loop type ${l}`)));
+['Do','For','While'].forEach(n=>allCards.push(createCard('Loop',n,0,`Loop ${n}`)));
 
 // Libraries
-['IOstream','Vector','Winmm','SDL2','GDIplus','Ctime','pygame','numpy','socket','math.js','WebSocket'].forEach(l=>allCards.push(createCard('Library',l,0,`Library ${l}`)));
+['IOstream','Vector','Winmm','SDL2','GDIplus','Ctime','pygame','numpy','socket','math.js','WebSocket','PixiJS','libcurl'].forEach(n=>allCards.push(createCard('Library',n,0,`Library ${n}`)));
 
 // Bonuses
-['Controller Support','Bluetooth Compatible','Database Included','Backup Save','Port Forwarding','Remote Server','Borrowed Code','AI Integration','Web Client','Memory Optimization','Language Integration','SQL-Friendly'].forEach(b=>allCards.push(createCard('Bonus',b,5,`Bonus ${b}`)));
+['Controller Support','Bluetooth Compatible','Database Included','Backup Save','Port Forwarding','Remote Server','Borrowed Code','AI Integration','Web Client','Memory Optimization','Language Integration','SQL-Friendly'].forEach(n=>allCards.push(createCard('Bonus',n,5,`Bonus ${n}`)));
 
 // Bugs
-['Segmentation Fault','Memory Leak','Syntax Error','Corrupted File'].forEach(b=>allCards.push(createCard('Bug',b,0,`Bug ${b}`)));
+['Segmentation Fault','Memory Leak','Syntax Error','Corrupted File'].forEach(n=>allCards.push(createCard('Bug',n,0,`Bug ${n}`)));
 
 // Events
-['Servers Down','Office Party','New Equipment','Sticky Keys','Install Wizard','Reboot','System Overload','Stack Overflow','Behind Schedule','Overachiever','Promotion','New Management','Trash Day','Reorganization','Blind Debugging'].forEach(e=>allCards.push(createCard('Event',e,0,`Event ${e}`)));
+['Servers Down','Office Party','New Equipment','Sticky Keys','Install Wizard','Reboot','System Overload','Stack Overflow','Behind Schedule','Overachiever','Promotion','New Management','Trash Day','Reorganization','Blind Debugging'].forEach(n=>allCards.push(createCard('Event',n,0,`Event ${n}`)));
 
 // If/Else
-for(let i=1;i<=10;i++) allCards.push(createCard('IfElse',`IfElse ${i}`,i,`If/Else chain card ${i}`));
+for(let i=1;i<=10;i++) allCards.push(createCard('IfElse',`IfElse ${i}`,1,`If/Else ${i}`));
 
-// --- Shuffle ---
-function shuffle(deck){ for(let i=deck.length-1;i>0;i--){ let j=Math.floor(Math.random()*(i+1)); [deck[i],deck[j]]=[deck[j],deck[i]]; }}
+function shuffle(deck){ for(let i=deck.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [deck[i],deck[j]]=[deck[j],deck[i]]; }}
 
-// --- Rendering ---
-function renderPlayers(){
-  const container=document.getElementById('players');
-  container.innerHTML='';
-  players.forEach((p,idx)=>{
-    const div=document.createElement('div');
-    div.className='player-area';
-    div.innerHTML=`<h3>${p.name} ${idx===currentPlayer?'(Current)':''}</h3>
-      <strong>Score:</strong> ${p.score}<br>
-      <strong>Hand:</strong><div id="hand-${idx}"></div>
-      <strong>Language Deck:</strong> <div id="langDeckCount-${idx}">${p.langDeck.length} cards</div>`;
-    container.appendChild(div);
+// Utilities for nested function access
+function getFuncByPath(program, path){
+  let cur = program[path[0]];
+  for(let i=1;i<path.length;i++){
+    cur = cur.nested[path[i]];
+  }
+  return cur;
+}
+function ensureFuncStructure(func){
+  if(!func.variables) func.variables=[];
+  if(!func.nested) func.nested=[];
+  if(!func.extra) func.extra={loops:[],ifelses:[],libraries:[]};
+  if(!func.bonuses) func.bonuses=[];
+}
+
+// Renderers
+function showCardInfo(card){
+  document.getElementById('cardInfoText').textContent = `${card.name} (${card.type}): ${card.desc} Value: ${card.value}`;
+}
+
+function renderPlayersPanel(){
+  const container = document.getElementById('playersContainer');
+  container.innerHTML = '';
+  players.forEach((p, idx)=>{
+    const panel = document.createElement('div');
+    panel.className = 'panel player-area';
+    const currentMark = idx===currentPlayer ? ' (Current)' : '';
+    panel.innerHTML = `<h3>${p.name}${currentMark}</h3>
+      <div class="small"><strong>Score:</strong> ${p.score} &nbsp; <strong>Programs:</strong> ${p.programs.length}</div>
+      <div style="margin-top:8px"><strong>Hand</strong> (max ${MAX_HAND}):<div id="hand-${idx}"></div></div>
+      <div style="margin-top:6px" class="small"><strong>Language Deck:</strong> ${p.langDeck.length} cards</div>`;
+    container.appendChild(panel);
     renderHand(idx);
   });
 }
 
 function renderHand(idx){
-  const handDiv=document.getElementById(`hand-${idx}`);
-  handDiv.innerHTML='';
-  players[idx].hand.forEach((c,i)=>{
-    const cDiv=document.createElement('div');
-    cDiv.className=`card ${c.type}`;
-    cDiv.textContent=c.name;
-    cDiv.onmouseover=()=>showCardInfo(c);
-    if(idx===currentPlayer) cDiv.onclick=()=>playCard(i);
-    handDiv.appendChild(cDiv);
+  const handDiv = document.getElementById(`hand-${idx}`);
+  if(!handDiv) return;
+  handDiv.innerHTML = '';
+  players[idx].hand.forEach((card, i)=>{
+    const el = document.createElement('div');
+    el.className = `card ${card.type}`;
+    el.textContent = card.name;
+    el.onmouseover = ()=>showCardInfo(card);
+    if(idx===currentPlayer) el.onclick = ()=>playCard(i);
+    handDiv.appendChild(el);
   });
 }
 
-function renderDeck(){ document.getElementById('deckCount').textContent=`Cards left: ${mainDeck.length}`; }
-function renderProgram(){ const div=document.getElementById('programArea'); div.innerHTML=''; players[currentPlayer].program.forEach(c=>{ const cDiv=document.createElement('div'); cDiv.className=`card ${c.type}`; cDiv.textContent=c.name; cDiv.onmouseover=()=>showCardInfo(c); div.appendChild(cDiv); }); }
-function showCardInfo(card){ document.getElementById('cardInfoText').textContent=`${card.name} (${card.type}): ${card.desc} Value: ${card.value}`;}
+function renderDeckCount(){ document.getElementById('deckCount').textContent = `Cards left: ${mainDeck.length}`; }
 
-// --- Actions ---
-document.getElementById('drawMainBtn').onclick=()=>{
-  const p=players[currentPlayer];
-  if(p.hand.length>=MAX_HAND) return alert('Hand full!');
-  if(mainDeck.length===0) return alert('Main deck empty!');
-  p.hand.push(mainDeck.pop());
-  renderHand(currentPlayer);
-  renderDeck();
-};
+// Render program with nested structure
+function renderProgramArea(){
+  const root = document.getElementById('programArea');
+  root.innerHTML = '';
+  const prog = players[currentPlayer].program;
+  if(prog.length===0){ root.innerHTML = '<div class="small">(no program cards played)</div>'; return; }
 
-document.getElementById('drawLangBtn')?.addEventListener('click',()=>{
-  const p=players[currentPlayer];
-  if(p.hand.length>=MAX_HAND) return alert('Hand full!');
-  if(p.langDeck.length===0) return alert('Language deck empty!');
-  p.hand.push(p.langDeck.pop());
-  renderHand(currentPlayer);
-  renderPlayers();
-});
-
-function playCard(idx){
-  const p=players[currentPlayer];
-  const card=p.hand.splice(idx,1)[0];
-  p.program.push(card);
-  renderHand(currentPlayer);
-  renderProgram();
+  prog.forEach((card, i)=>{
+    const cardBlock = renderFunctionBlock(card, [i]);
+    root.appendChild(cardBlock);
+  });
 }
 
-document.getElementById('completeProgramBtn').onclick=()=>{
-  const p=players[currentPlayer];
-  if(!p.program.some(c=>c.type==='Function')) return alert('Need at least one Function!');
-  let score=p.program.filter(c=>c.type==='Variable').reduce((s,c)=>s+c.value,0);
-  score+=p.program.filter(c=>c.type==='Bonus').reduce((s,c)=>s+c.value||0,0);
-  p.score+=score;
-  p.programs.push(score);
-  p.program=[];
-  alert(`${p.name} completed a program! Score: ${score}, Total Score: ${p.score}`);
-  if(p.programs.length>=PROGRAMS_TO_WIN){ alert(`${p.name} wins the game!`); document.getElementById('game').style.display='none'; return;}
-  nextPlayer();
-};
-
-document.getElementById('passBtn').onclick=()=>{ nextPlayer(); };
-
-function nextPlayer(){ currentPlayer=(currentPlayer+1)%players.length; renderPlayers(); renderProgram(); }
-
-// --- New Game ---
-document.getElementById('newGameBtn').onclick=()=>{
-  NUM_PLAYERS=parseInt(document.getElementById('numPlayers').value);
-  const size=document.getElementById('gameSize').value;
-  PROGRAMS_TO_WIN=size==='quick'?1:3;
-  currentPlayer=0;
-  players.length=0;
-  mainDeck=[];
-  for(let i=0;i<NUM_PLAYERS;i++){
-    // create language deck for each player
-    const langDeck=allCards.filter(c=>['Function','Loop','Library'].includes(c.type));
-    shuffle(langDeck);
-    players.push({name:`Player ${i+1}`, hand:[], programs:[], score:0, program:[], langDeck:langDeck});
+function renderFunctionBlock(card, path){
+  const block = document.createElement('div');
+  block.className = 'program-block';
+  const isSelected = selectedFunctionPath && JSON.stringify(selectedFunctionPath)===JSON.stringify(path);
+  const title = document.createElement('div');
+  title.textContent = `${card.name} (${card.type})`;
+  if(isSelected) title.className = 'selected';
+  title.onmouseover = ()=>showCardInfo(card);
+  if(card.type==='Function'){
+    title.onclick = ()=>{ selectedFunctionPath = path.slice(); renderProgramArea(); renderPlayersPanel(); };
   }
-  // main deck contains Variables, Bonuses, Bugs, Events, If/Else
-  mainDeck=allCards.filter(c=>['Variable','Bonus','Bug','Event','IfElse'].includes(c.type));
+  block.appendChild(title);
+
+  // variables
+  if(card.variables && card.variables.length){
+    const vwrap = document.createElement('div'); vwrap.className='nested small';
+    vwrap.textContent = 'Variables: ';
+    card.variables.forEach(v=>{ const vspan = document.createElement('span'); vspan.className=`card ${v.type}`; vspan.style.margin='4px'; vspan.textContent=v.name; vspan.onmouseover=()=>showCardInfo(v); vwrap.appendChild(vspan); });
+    block.appendChild(vwrap);
+  }
+
+  // extras
+  if(card.extra){
+    if(card.extra.loops && card.extra.loops.length){
+      const lw = document.createElement('div'); lw.className='nested small'; lw.textContent='Loops: ';
+      card.extra.loops.forEach(l=>{ const s=document.createElement('span'); s.className=`card ${l.type}`; s.style.margin='4px'; s.textContent=l.name; s.onmouseover=()=>showCardInfo(l); lw.appendChild(s); });
+      block.appendChild(lw);
+    }
+    if(card.extra.ifelses && card.extra.ifelses.length){
+      const iw = document.createElement('div'); iw.className='nested small'; iw.textContent='If/Else: ';
+      card.extra.ifelses.forEach(i=>{ const s=document.createElement('span'); s.className=`card ${i.type}`; s.style.margin='4px'; s.textContent=i.name; s.onmouseover=()=>showCardInfo(i); iw.appendChild(s); });
+      block.appendChild(iw);
+    }
+    if(card.extra.libraries && card.extra.libraries.length){
+      const lw = document.createElement('div'); lw.className='nested small'; lw.textContent='Libraries: ';
+      card.extra.libraries.forEach(l=>{ const s=document.createElement('span'); s.className=`card ${l.type}`; s.style.margin='4px'; s.textContent=l.name; s.onmouseover=()=>showCardInfo(l); lw.appendChild(s); });
+      block.appendChild(lw);
+    }
+  }
+
+  if(card.bonuses && card.bonuses.length){
+    const bw = document.createElement('div'); bw.className='nested small'; bw.textContent='Bonuses: ';
+    card.bonuses.forEach(b=>{ const s=document.createElement('span'); s.className='card Bonus'; s.style.margin='4px'; s.textContent=b.name; s.onmouseover=()=>showCardInfo(b); bw.appendChild(s); });
+    block.appendChild(bw);
+  }
+
+  // nested functions
+  if(card.nested && card.nested.length){
+    const nw = document.createElement('div'); nw.className='nested';
+    card.nested.forEach((nf, idx)=> nw.appendChild(renderFunctionBlock(nf, path.concat([idx]))));
+    block.appendChild(nw);
+  }
+
+  return block;
+}
+
+/* -----------------------
+   Game Actions & Handlers
+   -----------------------*/
+
+function startNewGame(){
+  NUM_PLAYERS = Math.max(3, parseInt(document.getElementById('numPlayers').value)||3);
+  PROGRAMS_TO_WIN = document.getElementById('gameSize').value === 'quick' ? 1 : 3;
+  currentPlayer = 0;
+  selectedFunctionPath = null;
+  players = [];
+
+  // build players
+  for(let i=0;i<NUM_PLAYERS;i++) players.push({name:`Player ${i+1}`, hand:[], program:[], score:0, programs:[], langDeck:[], skipNext:false});
+
+  // main deck: Variables, Bonuses, Bugs, Events, IfElse
+  mainDeck = [];
+  allCards.forEach(c=>{
+    if(!['Function','Loop','Library'].includes(c.type)) mainDeck.push(Object.assign({},c));
+  });
+  // create multiple copies of smaller set for playable deck size
+  const mainDeckBig = [];
+  for(let i=0;i<3;i++) mainDeckBig.push(...mainDeck.map(x=>Object.assign({},x)));
+  mainDeck = mainDeckBig;
   shuffle(mainDeck);
-  document.getElementById('game').style.display='flex';
-  renderPlayers();
-  renderDeck();
-  renderProgram();
+
+  // each player's language deck: Functions, Loops, Libraries (copies)
+  players.forEach(p=>{
+    const lang = [];
+    allCards.forEach(c=>{ if(['Function','Loop','Library'].includes(c.type)) lang.push(Object.assign({},c)); });
+    // repeat to have a deck
+    const ld = [];
+    for(let i=0;i<3;i++) ld.push(...lang.map(x=>Object.assign({},x)));
+    shuffle(ld);
+    p.langDeck = ld;
+  });
+
+  // initial hands (5 main each)
+  for(let i=0;i<NUM_PLAYERS;i++){
+    for(let j=0;j<5;j++){
+      if(mainDeck.length) players[i].hand.push(mainDeck.pop());
+    }
+  }
+
+  renderPlayersPanel();
+  renderProgramArea();
+  renderDeckCount();
+  document.getElementById('game').style.display = 'block';
+}
+
+document.getElementById('newGameBtn').onclick = ()=> startNewGame();
+
+document.getElementById('drawMainBtn').onclick = ()=>{
+  const p = players[currentPlayer];
+  if(p.hand.length >= MAX_HAND) return alert('Hand full!');
+  if(mainDeck.length === 0) return alert('Main deck empty!');
+  p.hand.push(mainDeck.pop());
+  renderPlayersPanel();
+  renderDeckCount();
 };
+
+document.getElementById('drawLangBtn').onclick = ()=>{
+  const p = players[currentPlayer];
+  if(p.hand.length >= MAX_HAND) return alert('Hand full!');
+  if(p.langDeck.length === 0) return alert('Language deck empty!');
+  p.hand.push(p.langDeck.pop());
+  renderPlayersPanel();
+};
+
+document.getElementById('passBtn').onclick = ()=>{ advanceTurn(); };
+
+document.getElementById('completeProgramBtn').onclick = ()=>{ completeProgram(); };
+
+// Helper: advance turn, respect skipNext flags
+function advanceTurn(){
+  // clear selection
+  selectedFunctionPath = null;
+  let next = (currentPlayer + 1) % players.length;
+  // rotate until find player who is not skipped; if skipNext true, consume it and skip
+  while(true){
+    if(players[next].skipNext){
+      players[next].skipNext = false;
+      next = (next + 1) % players.length;
+      continue;
+    }
+    break;
+  }
+  currentPlayer = next;
+  renderPlayersPanel();
+  renderProgramArea();
+}
+
+// Play a card from current player's hand
+function playCard(handIndex){
+  const p = players[currentPlayer];
+  if(handIndex < 0 || handIndex >= p.hand.length) return;
+  const card = p.hand[handIndex];
+
+  // immediate cards: Events and Bugs
+  if(card.type === 'Event'){
+    p.hand.splice(handIndex,1);
+    handleEvent(card);
+    renderPlayersPanel(); renderProgramArea(); renderDeckCount();
+    return;
+  }
+  if(card.type === 'Bug'){
+    p.hand.splice(handIndex,1);
+    handleBug(card);
+    renderPlayersPanel(); renderProgramArea(); renderDeckCount();
+    return;
+  }
+
+  // If no selectedFunctionPath and playing a top-level Function, push top-level function
+  if(card.type === 'Function' && !selectedFunctionPath){
+    const newFunc = Object.assign({variables:[],nested:[],extra:{loops:[],ifelses:[],libraries:[]},bonuses:[]}, card);
+    p.program.push(newFunc);
+    p.hand.splice(handIndex,1);
+    renderPlayersPanel(); renderProgramArea();
+    return;
+  }
+
+  // If a function is selected, play into that function (nested or attach)
+  if(selectedFunctionPath){
+    const targetFunc = getFuncByPath(p.program, selectedFunctionPath);
+    ensureFuncStructure(targetFunc);
+
+    if(card.type === 'Function'){
+      const nested = Object.assign({variables:[],nested:[],extra:{loops:[],ifelses:[],libraries:[]},bonuses:[]}, card);
+      targetFunc.nested.push(nested);
+      p.hand.splice(handIndex,1);
+      renderPlayersPanel(); renderProgramArea();
+      return;
+    }
+
+    if(card.type === 'Variable'){
+      targetFunc.variables.push(Object.assign({}, card));
+      p.hand.splice(handIndex,1);
+      renderPlayersPanel(); renderProgramArea();
+      return;
+    }
+
+    if(card.type === 'Loop'){
+      targetFunc.extra.loops.push(Object.assign({}, card));
+      p.hand.splice(handIndex,1);
+      renderPlayersPanel(); renderProgramArea();
+      return;
+    }
+
+    if(card.type === 'IfElse'){
+      targetFunc.extra.ifelses.push(Object.assign({}, card));
+      p.hand.splice(handIndex,1);
+      renderPlayersPanel(); renderProgramArea();
+      return;
+    }
+
+    if(card.type === 'Library'){
+      targetFunc.extra.libraries.push(Object.assign({}, card));
+      p.hand.splice(handIndex,1);
+      renderPlayersPanel(); renderProgramArea();
+      return;
+    }
+
+    if(card.type === 'Bonus'){
+      targetFunc.bonuses.push(Object.assign({}, card));
+      p.hand.splice(handIndex,1);
+      renderPlayersPanel(); renderProgramArea();
+      return;
+    }
+
+    // fallback: add to program top if nothing matched
+    p.program.push(card);
+    p.hand.splice(handIndex,1);
+    renderPlayersPanel(); renderProgramArea();
+    return;
+  }
+
+  // fallback: if no selection and card isn't Function, require selection
+  alert('Select a Function first (click a Function in your program) to attach Variables/Loops/IfElse/Libraries/Bonuses, or play a Function directly.');
+}
+
+/* -----------------------
+   Event & Bug effects
+   -----------------------*/
+
+function handleEvent(card){
+  const p = players[currentPlayer];
+  switch(card.name){
+    case 'Servers Down':
+      // skip next player's ability to play cards (we flag the next player)
+      const nextIdx = (currentPlayer + 1) % players.length;
+      players[nextIdx].skipNext = true;
+      alert('Servers Down — next player will skip their playable actions (skipNext set).');
+      break;
+    case 'Office Party':
+      p.score += 10;
+      players.forEach(pl=>{ if(pl!==p) pl.score += 5; });
+      alert('Office Party — +10 for you, +5 for others.');
+      break;
+    case 'New Equipment':
+      // immunity to bugs for one turn: we set a flag on current player
+      p.immuneToBugs = 1;
+      alert('New Equipment — you are immune to Bugs for one of your opponent\'s attempts (flag set).');
+      break;
+    case 'Sticky Keys':
+      // restrict variable plays to integers for 3 turns — store as counter
+      p.restrictedVarType = {type:'Integer', turns:3};
+      alert('Sticky Keys — you can only play Integer variables for 3 of your turns.');
+      break;
+    case 'Install Wizard':
+      // search main deck for first Library or Variable and add to hand
+      let foundIdx = mainDeck.findIndex(c => c.type === 'Library' || c.type === 'Variable');
+      if(foundIdx !== -1){
+        p.hand.push(mainDeck.splice(foundIdx,1)[0]);
+        alert('Install Wizard — you found a useful card and added it to your hand.');
+      } else alert('Install Wizard — nothing found.');
+      break;
+    case 'Reboot':
+      // return all faceup cards (program) to hand
+      p.program.forEach(f=>{
+        // return variables and function containers to hand
+        if(f.variables) f.variables.forEach(v=>p.hand.push(v));
+        p.hand.push({type:'Function', name:f.name, desc:f.desc});
+        // nested functions are returned simply as functions (flatten)
+        if(f.nested) f.nested.forEach(nf=>p.hand.push({type:'Function', name:nf.name, desc:nf.desc}));
+      });
+      p.program = [];
+      alert('Reboot — your program returned to your hand.');
+      break;
+    case 'System Overload':
+      // all players return their programs to hands
+      players.forEach(pl=>{
+        pl.program.forEach(f=>{
+          if(f.variables) f.variables.forEach(v=>pl.hand.push(v));
+          pl.hand.push({type:'Function', name:f.name, desc:f.desc});
+          if(f.nested) f.nested.forEach(nf=>pl.hand.push({type:'Function', name:nf.name, desc:nf.desc}));
+        });
+        pl.program = [];
+      });
+      alert('System Overload — everyone\'s programs returned to their hands.');
+      break;
+    case 'Stack Overflow':
+      // give one variable/IfElse/Bonus to another player (if possible). Simple: give first variable found to next player
+      const nextP = players[(currentPlayer+1)%players.length];
+      let given = false;
+      for(const f of players[currentPlayer].program){
+        if(f.variables && f.variables.length){
+          nextP.hand.push(f.variables.pop());
+          given = true;
+          break;
+        }
+      }
+      if(!given && players[currentPlayer].hand.length) nextP.hand.push(players[currentPlayer].hand.pop());
+      alert('Stack Overflow — gave a card to the next player if possible.');
+      break;
+    case 'Behind Schedule':
+      // skip current player's next turn (set flag)
+      p.skipNext = true;
+      alert('Behind Schedule — you will skip your next turn.');
+      break;
+    case 'Overachiever':
+      // take an extra turn now (advanceTurn but then set current back)
+      alert('Overachiever — take an extra turn (no auto advance).');
+      break;
+    case 'Promotion':
+      p.score += 20;
+      alert('Promotion — +20 points.');
+      break;
+    case 'Trash Day':
+      if(p.hand.length) p.hand.pop();
+      alert('Trash Day — you discarded a card from your hand.');
+      break;
+    case 'Reorganization':
+      // return one function and its variables to hand (pop last)
+      if(p.program.length){
+        const f = p.program.pop();
+        if(f.variables) f.variables.forEach(v=>p.hand.push(v));
+        p.hand.push({type:'Function', name:f.name, desc:f.desc});
+      }
+      alert('Reorganization — one function removed and returned.');
+      break;
+    case 'Blind Debugging':
+      // remove one of your variables from play (first found)
+      for(const f of p.program){
+        if(f.variables && f.variables.length){ f.variables.splice(0,1); p.debugShield=true; break; }
+      }
+      alert('Blind Debugging — removed a variable; you have a debug shield for next bug.');
+      break;
+    default:
+      alert(`Event triggered: ${card.name}`);
+      break;
+  }
+}
+
+function handleBug(card){
+  // Bugs typically target other players; for simplicity prompt to target next player
+  const targetIdx = (currentPlayer + 1) % players.length;
+  const target = players[targetIdx];
+
+  // If current player is immune, ignore
+  if(players[currentPlayer].immuneToBugs){
+    players[currentPlayer].immuneToBugs--;
+    alert('You were immune to this Bug. Nothing happens.');
+    return;
+  }
+
+  switch(card.name){
+    case 'Segmentation Fault':
+      // remove functions that have blank/zero variables
+      target.program = target.program.filter(f=>{
+        const hasBlank = (f.variables && f.variables.some(v=>v.value === 0));
+        if(hasBlank) {
+          // return variables to owner's hand before removing function
+          if(f.variables) f.variables.forEach(v=>target.hand.push(v));
+          return false; // remove function
+        }
+        return true;
+      });
+      alert('Segmentation Fault — removed functions with blank variables from target program.');
+      break;
+    case 'Memory Leak':
+      // return all variables in each function to owner's hand
+      target.program.forEach(f=>{
+        if(f.variables) { f.variables.forEach(v=>target.hand.push(v)); f.variables = []; }
+      });
+      alert('Memory Leak — all variables returned from target program to their hand.');
+      break;
+    case 'Syntax Error':
+      // target cannot play any cards next turn
+      target.skipNext = true;
+      alert('Syntax Error — target will skip their next turn.');
+      break;
+    case 'Corrupted File':
+      // remove one Media variable from target programs
+      target.program.forEach(f=>{
+        if(f.variables){
+          const idx = f.variables.findIndex(v=>v.desc && v.desc.includes('Media') || v.type === 'Variable' && v.name.startsWith('Media'));
+          if(idx !== -1) f.variables.splice(idx,1);
+        }
+      });
+      alert('Corrupted File — some media variables were removed from target program(s).');
+      break;
+    default:
+      alert('Bug triggered: ' + card.name);
+  }
+}
+
+/* -----------------------
+   Scoring (nested functions and if/else math)
+   -----------------------*/
+
+// Validate library requirements for certain functions (example mapping)
+function requiredLibrariesForFunction(funcName){
+  const map = {
+    'Calculator': ['IOstream'],
+    'Concatenate': ['IOstream'],
+    'Conjoin': ['IOstream'],
+    'createServer': ['libcurl','socket','WebSocket'],
+    'playSound': ['Winmm','pygame'],
+    'showImage': ['GDIplus','pygame','PixiJS'],
+    'playVideo': ['Winmm','HTML5','pygame']
+  };
+  return map[funcName] || [];
+}
+
+// compute score recursively for a function object
+function computeFunctionScore(func, ownerProgram){
+  ensureFuncStructure(func);
+  // base is sum of variable values inside this function
+  let base = 0;
+  func.variables.forEach(v => base += (v.value || 0));
+
+  // loops
+  if(func.extra.loops && func.extra.loops.length){
+    func.extra.loops.forEach(loop=>{
+      if(loop.name === 'Do') base += 5;
+      else if(loop.name === 'For'){
+        // find first integer variable in this function
+        const intVar = func.variables.find(v => v.name.startsWith('Integer') || (typeof v.value === 'number' && Number.isInteger(v.value)));
+        if(intVar) base += intVar.value;
+      } else if(loop.name === 'While'){
+        if(func.variables.length >= 2) base += (func.variables[0].value || 0) + (func.variables[1].value || 0);
+      }
+    });
+  }
+
+  // If/Else chain
+  const m = func.extra.ifelses ? func.extra.ifelses.length : 0;
+  if(m > 0){
+    // require at least one variable as a control variable
+    if(func.variables && func.variables.length > 0){
+      // each If/Else is worth (m + 1) points -> total m*(m+1)
+      base += m * (m + 1);
+    } else {
+      // no variables -> chain doesn't apply
+    }
+  }
+
+  // bonuses
+  if(func.bonuses && func.bonuses.length){
+    func.bonuses.forEach(b => base += (b.value || 0));
+  }
+
+  // compute nested function scores recursively
+  let nestedScores = 0;
+  const nestedCount = func.nested ? func.nested.length : 0;
+  if(func.nested && func.nested.length){
+    for(const nf of func.nested) nestedScores += computeFunctionScore(nf, ownerProgram);
+  }
+
+  // library requirement check: if this function requires libraries and they are not present in owner's program, this function scores 0
+  const requiredLibs = requiredLibrariesForFunction(func.name) || [];
+  if(requiredLibs.length){
+    const hasAll = requiredLibs.every(libName => {
+      // check owner's program for a library with that name (top-level or inside any function)
+      return searchProgramForLibrary(ownerProgram, libName);
+    });
+    if(!hasAll){
+      // function invalid -> scores 0 (but nested functions still count separately)
+      return nestedScores; // only nested contributions (they remain)
+    }
+  }
+
+  // parent multiplier: multiply this function's base by (1 + number_of_direct_nested_functions)
+  const multiplier = 1 + nestedCount;
+  const scoreHere = base * multiplier;
+
+  return scoreHere + nestedScores;
+}
+
+// search program (top-level and in nested) for a library name
+function searchProgramForLibrary(prog, libName){
+  for(const f of prog){
+    // check f.extra.libraries
+    if(f.extra && f.extra.libraries && f.extra.libraries.some(l => l.name === libName)) return true;
+    // check nested recursively
+    if(f.nested && f.nested.length && searchProgramForLibrary(f.nested, libName)) return true;
+  }
+  return false;
+}
+
+function completeProgram(){
+  const p = players[currentPlayer];
+  if(p.program.length === 0) return alert('You have no program to complete.');
+
+  // validate at least one Function exists
+  const hasFunc = p.program.some(c => c.type === 'Function');
+  if(!hasFunc) return alert('At least one Function required to complete a program.');
+
+  // compute total score: sum of computeFunctionScore over top-level functions
+  let total = 0;
+  for(const f of p.program){
+    if(f.type === 'Function') total += computeFunctionScore(f, p.program);
+    // If non-function top-level (e.g., stray variable), count their variable values anyway
+    else if(f.type === 'Variable') total += (f.value || 0);
+  }
+
+  p.score += total;
+  p.programs.push(p.program);
+  p.program = [];
+  selectedFunctionPath = null;
+  alert(`${p.name} completed a program and scored ${total} points! Total score: ${p.score}`);
+
+  renderPlayersPanel(); renderProgramArea(); renderDeckCount();
+
+  if(p.programs.length >= PROGRAMS_TO_WIN){
+    alert(`${p.name} has completed ${PROGRAMS_TO_WIN} programs and wins the game!`);
+    // End game: show final scoreboard
+    let sb = 'Final scores:\n';
+    players.forEach(pl => sb += `${pl.name}: ${pl.score}\n`);
+    alert(sb);
+    // reload to reset
+    window.location.reload();
+    return;
+  }
+
+  // next player's turn
+  advanceTurn();
+}
+
+/* -----------------------
+   Small convenience: click-to-play support
+   -----------------------*/
+
+// add click handlers for rendered hand (needs delegation when rendered)
+// we already installed onclicks when rendering hand; ensure those refer to proper player
+
+// initial hiding
+document.getElementById('game').style.display = 'none';
 </script>
 </body>
 </html>
