@@ -1,177 +1,273 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Hell0, W{}rld! — Playtest Prototype (Rules v1.2)</title>
-  <style>
-    :root{--bg:#0f1724;--card:#0b1220;--accent:#0ea5f9;--muted:#94a3b8;--panel:#071024}
-    *{box-sizing:border-box;font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif}
-    body{margin:0;background:linear-gradient(180deg,#031025 0%, #081426 60%);color:#e6eef8}
-    .wrap{max-width:1100px;margin:20px auto;padding:18px;}
-    header{display:flex;align-items:center;gap:16px;margin-bottom:12px}
-    h1{margin:0;font-size:20px}
-    .layout{display:grid;grid-template-columns:260px 1fr 320px;gap:12px}
-    .panel{background:linear-gradient(180deg,var(--panel),#0b1a2b);padding:10px;border-radius:10px;box-shadow:0 6px 18px rgba(2,6,23,.6)}
-    .deck-list, .hand, .play-area{min-height:120px}
-    .deck{padding:8px;border-radius:8px;background:linear-gradient(180deg,var(--card),#042032);margin-bottom:8px}
-    .card{display:inline-block;padding:8px 10px;margin:6px;border-radius:8px;background:#072033;border:1px solid rgba(255,255,255,.04);cursor:pointer;min-width:80px;white-space:pre-line}
-    .card.small{padding:6px;font-size:13px}
-    .toolbar{display:flex;gap:8px;margin-bottom:8px}
-    button{background:var(--accent);color:#042032;border:none;padding:8px 10px;border-radius:8px;cursor:pointer}
-    button.secondary{background:#1f2937;color:#cfe9ff}
-    .log{height:220px;overflow:auto;padding:6px;background:rgba(255,255,255,.02);border-radius:6px}
-    .players{display:flex;gap:6px;flex-wrap:wrap}
-    .player{padding:8px;border-radius:8px;background:#041826;cursor:pointer}
-    .player.active{outline:2px solid var(--accent)}
-    .program-slot{min-height:36px;padding:8px;border-radius:6px;background:rgba(255,255,255,.01);margin:6px 0}
-    .status{font-size:13px;color:var(--muted)}
-    footer{margin-top:12px;color:var(--muted);font-size:13px}
-    .controls{display:flex;gap:6px;flex-wrap:wrap}
-    .small{font-size:12px;color:var(--muted)}
-    .selected{outline:2px solid var(--accent)}
-    .card-grid{display:flex;flex-wrap:wrap;gap:6px}
-    .panel-header{display:flex;justify-content:space-between;align-items:center}
-    label{font-size:13px}
-    .right-col .log {height:140px}
-    .req-true{color:#4ade80}
-    .req-false{color:#f87171}
-    .breakdown{font-size:12px;color:#94a3b8;margin-top:6px}
-  </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Hell0, W{}rld! — Playtest Prototype (Rules v1.2)</title>
+<style>
+:root{--bg:#0f1724;--card:#0b1220;--accent:#0ea5f9;--muted:#94a3b8;--panel:#071024}
+*{box-sizing:border-box;font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif}
+body{margin:0;background:linear-gradient(180deg,#031025 0%, #081426 60%);color:#e6eef8}
+.wrap{max-width:1100px;margin:20px auto;padding:18px;}
+header{display:flex;align-items:center;gap:16px;margin-bottom:12px}
+h1{margin:0;font-size:20px}
+.layout{display:grid;grid-template-columns:260px 1fr 320px;gap:12px}
+.panel{background:linear-gradient(180deg,var(--panel),#0b1a2b);padding:10px;border-radius:10px;box-shadow:0 6px 18px rgba(2,6,23,.6)}
+.deck-list, .hand, .play-area{min-height:120px}
+.deck{padding:8px;border-radius:8px;background:linear-gradient(180deg,var(--card),#042032);margin-bottom:8px}
+.card{display:inline-block;padding:8px 10px;margin:6px;border-radius:8px;background:#072033;border:1px solid rgba(255,255,255,.04);cursor:pointer;min-width:80px;white-space:pre-line}
+.card.small{padding:6px;font-size:13px}
+.toolbar{display:flex;gap:8px;margin-bottom:8px}
+button{background:var(--accent);color:#042032;border:none;padding:8px 10px;border-radius:8px;cursor:pointer}
+button.secondary{background:#1f2937;color:#cfe9ff}
+.log{height:220px;overflow:auto;padding:6px;background:rgba(255,255,255,.02);border-radius:6px}
+.players{display:flex;gap:6px;flex-wrap:wrap}
+.player{padding:8px;border-radius:8px;background:#041826;cursor:pointer}
+.player.active{outline:2px solid var(--accent)}
+.program-slot{min-height:36px;padding:8px;border-radius:6px;background:rgba(255,255,255,.01);margin:6px 0}
+.status{font-size:13px;color:var(--muted)}
+footer{margin-top:12px;color:var(--muted);font-size:13px}
+.controls{display:flex;gap:6px;flex-wrap:wrap}
+.small{font-size:12px;color:var(--muted)}
+.selected{outline:2px solid var(--accent)}
+.card-grid{display:flex;flex-wrap:wrap;gap:6px}
+.panel-header{display:flex;justify-content:space-between;align-items:center}
+label{font-size:13px}
+.right-col .log {height:140px}
+.req-true{color:#4ade80}
+.req-false{color:#f87171}
+.breakdown{font-size:12px;color:#94a3b8;margin-top:6px}
+</style>
 </head>
 <body>
-  <div class="wrap">
-    <header>
-      <h1>Hell0, W{}rld! — Playtest Prototype (Rules v1.2)</h1>
-      <div class="status">Playtest: draw → (optional) play 1 Function + 1 Variable — Bugs/Events implemented.</div>
-    </header>
+<div class="wrap">
+<header>
+<h1>Hell0, W{}rld! — Playtest Prototype (Rules v1.2)</h1>
+<div class="status">Playtest: draw → (optional) play 1 Function + 1 Variable — Bugs/Events implemented.</div>
+</header>
 
-    <div style="margin-bottom:10px" class="controls">
-      Mode:
-      <select id="mode">
-        <option value="full" selected>Full (3 programs to win)</option>
-        <option value="quick">Quick (1 program to win)</option>
-      </select>
-      Players:
-      <select id="playerCount"><option>2</option><option selected>3</option><option>4</option></select>
-      <button id="resetBtn" class="secondary">New Game</button>
-      <button id="dump" class="secondary">Dump GameState (console)</button>
-    </div>
+<div style="margin-bottom:10px" class="controls">
+Mode:
+<select id="mode">
+<option value="full" selected>Full (3 programs to win)</option>
+<option value="quick">Quick (1 program to win)</option>
+</select>
+Players:
+<select id="playerCount"><option>2</option><option selected>3</option><option>4</option></select>
+<button id="resetBtn" class="secondary">New Game</button>
+<button id="dump" class="secondary">Dump GameState (console)</button>
+</div>
 
-    <div class="layout">
-      <aside class="panel">
-        <div class="panel-header"><strong>Decks & Actions</strong><span class="small" id="actionState">Turn: draw not taken</span></div>
+<div class="layout">
+<aside class="panel">
+<div class="panel-header"><strong>Decks & Actions</strong><span class="small" id="actionState">Turn: draw not taken</span></div>
 
-        <div class="toolbar" style="margin-top:8px">
-          <button id="drawMainBtn">Draw Main</button>
-          <button id="drawLangBtn" class="secondary">Draw Language</button>
-          <button id="playSelectedBtn">Play Selected</button>
-        </div>
+<div class="toolbar" style="margin-top:8px">
+<button id="drawMainBtn">Draw Main</button>
+<button id="drawLangBtn" class="secondary">Draw Language</button>
+<button id="playSelectedBtn">Play Selected</button>
+</div>
 
-        <div style="margin-top:8px">
-          <strong>Decks</strong>
-          <div class="deck-list" id="deckList"></div>
-        </div>
+<div style="margin-top:8px">
+<strong>Decks</strong>
+<div class="deck-list" id="deckList"></div>
+</div>
 
-        <hr />
+<hr />
 
-        <div>
-          <strong>Players</strong>
-          <div class="players" id="playersList"></div>
-          <div style="margin-top:8px">Current player: <span id="curPlayerName"></span></div>
-          <div style="margin-top:6px" class="status">Completed Programs: <span id="completeCount">0</span></div>
-          <div style="margin-top:6px" class="status">Scores: <span id="scores">-</span></div>
-        </div>
-      </aside>
+<div>
+<strong>Players</strong>
+<div class="players" id="playersList"></div>
+<div style="margin-top:8px">Current player: <span id="curPlayerName"></span></div>
+<div style="margin-top:6px" class="status">Completed Programs: <span id="completeCount">0</span></div>
+<div style="margin-top:6px" class="status">Scores: <span id="scores">-</span></div>
+</div>
+</aside>
 
-      <main class="panel">
-        <div class="panel-header"><strong>Play Area</strong>
-          <div class="small">Draw first. Then you may play: 0–1 Function, 0–1 Variable, plus Libraries/Bonuses/IfElse.</div>
-        </div>
+<main class="panel">
+<div class="panel-header"><strong>Play Area</strong>
+<div class="small">Draw first. Then you may play: 0–1 Function, 0–1 Variable, plus Libraries/Bonuses/IfElse.</div>
+</div>
 
-        <div class="play-area" id="playArea" style="margin-top:8px">
-          <div><strong>Programs in progress (click to select)</strong></div>
-          <div id="programs"></div>
+<div class="play-area" id="playArea" style="margin-top:8px">
+<div><strong>Programs in progress (click to select)</strong></div>
+<div id="programs"></div>
 
-          <div style="margin-top:10px">
-            <button id="declareBtn">Declare Finished</button>
-            <button id="endTurnBtn" class="secondary">End Turn</button>
-          </div>
-        </div>
+<div style="margin-top:10px">
+<button id="declareBtn">Declare Finished</button>
+<button id="endTurnBtn" class="secondary">End Turn</button>
+</div>
+</div>
 
-        <hr />
+<hr />
 
-        <div>
-          <strong>Your Hand (click to toggle selection)</strong>
-          <div class="hand card-grid" id="hand"></div>
-          <div style="margin-top:8px">
-            <button id="discardBtn" class="secondary">Discard Selected</button>
-          </div>
-        </div>
-      </main>
+<div>
+<strong>Your Hand (click to toggle selection)</strong>
+<div class="hand card-grid" id="hand"></div>
+<div style="margin-top:8px">
+<button id="discardBtn" class="secondary">Discard Selected</button>
+</div>
+</div>
+</main>
 
-      <aside class="panel right-col">
-        <div><strong>Event Log</strong></div>
-        <div class="log" id="log"></div>
-        <hr />
-        <div>
-          <strong>Game Controls</strong>
-          <div style="margin-top:8px">
-            <div class="small">
-              – Turn flow: draw (main or lang) ⟶ may play up to 1 Function + 1 Variable (other types allowed).<br/>
-              – Declare: program must have ≥1 Function and satisfy requirements.<br/>
-              – If/Else chain, Libraries & Bonuses affect score. First to target wins.<br/>
-              – Hand limit is 8. Bugs/Events resolve immediately.
-            </div>
-          </div>
-        </div>
-      </aside>
-    </div>
+<aside class="panel right-col">
+<div><strong>Event Log</strong></div>
+<div class="log" id="log"></div>
+<hr />
+<div>
+<strong>Game Controls</strong>
+<div style="margin-top:8px">
+<div class="small">
+– Turn flow: draw (main or lang) ⟶ may play up to 1 Function + 1 Variable (other types allowed).<br/>
+– Declare: program must have ≥1 Function and satisfy requirements.<br/>
+– If/Else chain, Libraries & Bonuses affect score. First to target wins.<br/>
+– Hand limit is 8. Bugs/Events resolve immediately.
+</div>
+</div>
+</div>
+</aside>
+</div>
 
-    <footer>Prototype Rules v1.2 — bug/event resolution added. Happy playtesting.</footer>
-  </div>
+<footer>Prototype Rules v1.2 — bug/event resolution added. Happy playtesting.</footer>
+</div>
 
-  <script>
-  document.addEventListener('DOMContentLoaded', () => {
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  // ----------------- Utilities -----------------
+  function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+  function clone(o){return JSON.parse(JSON.stringify(o));}
+  function uiLog(txt){const el=document.getElementById('log');if(!el) return; const div=document.createElement('div'); div.innerText=(new Date()).toLocaleTimeString()+' — '+txt; el.prepend(div); console.log(txt);}
 
-  // ----------- Utilities -----------
-  function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]];} return a; }
-  function clone(o){ return JSON.parse(JSON.stringify(o)); }
-  function uiLog(txt){
-    const el=document.getElementById('log');
-    if(!el){ console.warn('Log element missing'); return; }
-    const div = document.createElement('div');
-    div.innerText=(new Date()).toLocaleTimeString()+' — '+txt;
-    el.prepend(div);
-    console.log(txt);
+  // ----------------- Card pools -----------------
+  const VARIABLES=[{id:'int1',type:'Integer',value:1,label:'Integer 1'},{id:'int2',type:'Integer',value:2,label:'Integer 2'},{id:'int5',type:'Integer',value:5,label:'Integer 5'},{id:'int10',type:'Integer',value:10,label:'Integer 10'},{id:'boolT',type:'Boolean',value:1,label:'Boolean True'},{id:'boolF',type:'Boolean',value:0,label:'Boolean False'},{id:'strHello',type:'String',value:11,label:'"Hello World!" [11]'},{id:'strURL',type:'String',value:22,label:'Raszyra.GitHub.io/Site [22]'},{id:'imgKitten',type:'Media',value:2,label:'kitten.jpg [2MB]'},{id:'videoFail',type:'Media',value:3,label:'fail.mp4 [3MB]'},{id:'classProj',type:'Class',value:9,label:'Project Class [9]'}];
+  const FUNCTIONS=[{id:'fn_calc',type:'Function',requires:[{type:'Integer'},{type:'Integer'}],mult:1.2,label:'Calculator'},{id:'fn_playVideo',type:'Function',requires:[{type:'Media'}],mult:2,label:'playVideo'},{id:'fn_newDB',type:'Function',requires:[{type:'Class'}],mult:1.5,label:'Create DB'},{id:'fn_if',type:'IfElse',requires:[],mult:1,label:'If/Else'}];
+
+  // ----------------- Game state -----------------
+  let gameState={players:[],curPlayer:0,hand:[],programs:[],completed:0,targetPrograms:3,deckVars:[],deckFns:[],turn:'draw'};
+
+  // ----------------- UI -----------------
+  const handEl=document.getElementById('hand');
+  const programsEl=document.getElementById('programs');
+  const deckListEl=document.getElementById('deckList');
+  const playersListEl=document.getElementById('playersList');
+  const curPlayerNameEl=document.getElementById('curPlayerName');
+  const completeCountEl=document.getElementById('completeCount');
+  const scoresEl=document.getElementById('scores');
+  const actionStateEl=document.getElementById('actionState');
+
+  // ----------------- Init players -----------------
+  function setupPlayers(n){
+    gameState.players=[]; for(let i=1;i<=n;i++){gameState.players.push({name:'Player '+i,hand:[],score:0});}
+    renderPlayers();
   }
 
-  // ----------- All other JS code from your original script here (VARIABLES, FUNCTIONS, LIBRARIES, game state, decks, draw/play/etc.) -----------
-  // I've left this comment here just for brevity in this snippet; in your final HTML paste the full JS code.
+  function renderPlayers(){
+    playersListEl.innerHTML='';
+    gameState.players.forEach((p,i)=>{
+      const div=document.createElement('div'); div.className='player'+(i===gameState.curPlayer?' active':''); div.innerText=p.name;
+      div.onclick=()=>{gameState.curPlayer=i; renderPlayers(); uiLog(p.name+' selected'); updateUI();}
+      playersListEl.appendChild(div);
+    });
+    curPlayerNameEl.innerText=gameState.players[gameState.curPlayer].name;
+  }
 
-  // ----------- UI Hooks -----------
-  const resetBtn = document.getElementById('resetBtn');
-  const dumpBtn = document.getElementById('dump');
-  const drawMainBtn = document.getElementById('drawMainBtn');
-  const drawLangBtn = document.getElementById('drawLangBtn');
-  const playSelectedBtn = document.getElementById('playSelectedBtn');
-  const declareBtn = document.getElementById('declareBtn');
-  const endTurnBtn = document.getElementById('endTurnBtn');
-  const discardBtn = document.getElementById('discardBtn');
+  // ----------------- Deck setup -----------------
+  function setupDecks(){
+    gameState.deckVars=shuffle(clone(VARIABLES));
+    gameState.deckFns=shuffle(clone(FUNCTIONS));
+    deckListEl.innerHTML='<div>Variable Deck: '+gameState.deckVars.length+' cards</div><div>Function Deck: '+gameState.deckFns.length+' cards</div>';
+  }
 
-  resetBtn.onclick = ()=> newGame(parseInt(document.getElementById('playerCount').value,10));
-  dumpBtn.onclick = ()=> console.log(clone(gameState));
-  drawMainBtn.onclick = ()=> drawCard('main');
-  drawLangBtn.onclick = ()=> drawCard('lang');
-  playSelectedBtn.onclick = ()=> playSelected();
-  declareBtn.onclick = ()=> declareProgram();
-  endTurnBtn.onclick = ()=> endTurn();
-  discardBtn.onclick = ()=> discardSelected();
+  // ----------------- Hand UI -----------------
+  function renderHand(){
+    handEl.innerHTML='';
+    gameState.players[gameState.curPlayer].hand.forEach((c,i)=>{
+      const card=document.createElement('div'); card.className='card'; card.innerText=c.label; card.onclick=()=>{
+        c.selected=!c.selected; card.classList.toggle('selected',!!c.selected);
+      }
+      handEl.appendChild(card);
+    });
+  }
 
-  // Start game on load
-  newGame(parseInt(document.getElementById('playerCount').value,10));
+  // ----------------- Programs UI -----------------
+  function renderPrograms(){
+    programsEl.innerHTML='';
+    gameState.programs.forEach((prog,i)=>{
+      const div=document.createElement('div'); div.className='program-slot'; div.innerText=prog.label||'Program '+(i+1);
+      div.onclick=()=>{gameState.programs.forEach(p=>p.selected=false); prog.selected=true; updateUI();}
+      if(prog.selected) div.classList.add('selected');
+      programsEl.appendChild(div);
+    });
+  }
 
-  });
-  </script>
+  // ----------------- Game functions -----------------
+  function newGame(){
+    const pc=parseInt(document.getElementById('playerCount').value);
+    gameState.curPlayer=0; gameState.completed=0;
+    gameState.targetPrograms=document.getElementById('mode').value==='quick'?1:3;
+    setupPlayers(pc); setupDecks(); gameState.players.forEach(p=>p.hand=[]); gameState.programs=[]; updateUI(); uiLog('New game started');
+  }
+
+  function drawCard(type){
+    const deck=type==='main'?gameState.deckVars:gameState.deckFns;
+    if(deck.length===0){uiLog('Deck empty'); return;}
+    const card=deck.pop(); gameState.players[gameState.curPlayer].hand.push(card); uiLog('Drew '+card.label); renderHand(); renderDecks();
+  }
+
+  function renderDecks(){deckListEl.innerHTML='<div>Variable Deck: '+gameState.deckVars.length+' cards</div><div>Function Deck: '+gameState.deckFns.length+' cards</div>';}
+
+  function playSelected(){
+    const hand=gameState.players[gameState.curPlayer].hand;
+    const sel=hand.filter(c=>c.selected);
+    if(sel.length===0){uiLog('No card selected'); return;}
+    const prog=gameState.programs.find(p=>p.selected)||{label:'Program '+(gameState.programs.length+1),cards:[]};
+    if(!gameState.programs.includes(prog)) gameState.programs.push(prog);
+    sel.forEach(c=>{prog.cards.push(c); hand.splice(hand.indexOf(c),1);});
+    prog.label='Program '+(gameState.programs.indexOf(prog)+1);
+    gameState.programs.forEach(p=>p.selected=false); prog.selected=true;
+    renderHand(); renderPrograms(); uiLog('Played '+sel.map(c=>c.label).join(', '));
+  }
+
+  function declareProgram(){
+    const prog=gameState.programs.find(p=>p.selected);
+    if(!prog){uiLog('Select a program first'); return;}
+    if(!prog.cards.some(c=>c.type==='Function')){uiLog('Program invalid: needs Function'); return;}
+    gameState.completed++; uiLog('Program declared: '+prog.label);
+    updateUI();
+  }
+
+  function endTurn(){
+    gameState.curPlayer=(gameState.curPlayer+1)%gameState.players.length; uiLog('Turn ended'); renderPlayers(); renderHand(); renderPrograms(); updateUI();
+  }
+
+  function discardSelected(){
+    const hand=gameState.players[gameState.curPlayer].hand;
+    const sel=hand.filter(c=>c.selected);
+    sel.forEach(c=>hand.splice(hand.indexOf(c),1));
+    uiLog('Discarded '+sel.map(c=>c.label).join(', '));
+    renderHand();
+  }
+
+  function updateUI(){
+    renderHand(); renderPrograms();
+    completeCountEl.innerText=gameState.completed;
+    scoresEl.innerText=gameState.players.map(p=>p.name+':'+p.hand.length).join(', ');
+    actionStateEl.innerText='Turn: '+gameState.turn;
+  }
+
+  // ----------------- Bind buttons -----------------
+  document.getElementById('resetBtn').onclick=newGame;
+  document.getElementById('drawMainBtn').onclick=()=>drawCard('main');
+  document.getElementById('drawLangBtn').onclick=()=>drawCard('fn');
+  document.getElementById('playSelectedBtn').onclick=playSelected;
+  document.getElementById('declareBtn').onclick=declareProgram;
+  document.getElementById('endTurnBtn').onclick=endTurn;
+  document.getElementById('discardBtn').onclick=discardSelected;
+  document.getElementById('dump').onclick=()=>console.log(clone(gameState));
+
+  // ----------------- Start game -----------------
+  newGame();
+});
+</script>
 </body>
 </html>
